@@ -17,6 +17,7 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const PAGE_CACHE_KEY = 'prakrit_landing_cache_v1';
+const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
 const readLandingCache = () => {
   try {
@@ -280,7 +281,7 @@ export default function LandingPage() {
           </span>
         </div>
         {settings.whatsappNumber && (
-          <a href={`https://wa.me/${settings.whatsappNumber.replace('+', '')}?text=Hello, I have a query about Prakrit Astro.`} target="_blank" rel="noreferrer"
+          <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Astro.`} target="_blank" rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#25D366] to-[#0e6e63] text-white text-xs md:text-sm font-bold shadow-md shadow-[#25D366]/10 hover:brightness-110 hover:-translate-y-0.5 transition-all duration-300">
             <MessageCircle size={16} /><span className="hidden sm:inline">WhatsApp Support</span>
           </a>
@@ -656,7 +657,7 @@ export default function LandingPage() {
 
       {/* Floating Action WhatsApp */}
       {settings.whatsappNumber && (
-        <a href={`https://wa.me/${settings.whatsappNumber.replace('+', '')}?text=Hello, I have a query about Prakrit Career Astro.`}
+        <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Career Astro.`}
           target="_blank" rel="noreferrer"
           className="fixed right-4 bottom-24 md:bottom-6 z-[125] w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#0e6e63] flex items-center justify-center text-white shadow-xl hover:scale-110 active:scale-90 transition-transform duration-300"
           aria-label="Contact WhatsApp">

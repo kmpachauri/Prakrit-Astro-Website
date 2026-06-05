@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AlertCircle, ArrowLeft, HelpCircle } from 'lucide-react';
+
+const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
 export default function FailedPage() {
   const [params] = useSearchParams();
   const orderId = params.get('orderId');
-  const supportLink = `https://wa.me/919999999999?text=${encodeURIComponent(`Payment help needed. Order ID: ${orderId || 'N/A'}`)}`;
+  const [supportNumber, setSupportNumber] = useState('+919999999999');
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/public/active-landing-page`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.settings?.whatsappNumber) setSupportNumber(data.settings.whatsappNumber);
+      })
+      .catch(() => {});
+  }, []);
+
+  const supportLink = `https://wa.me/${formatWhatsAppNumber(supportNumber)}?text=${encodeURIComponent(`Payment help needed. Order ID: ${orderId || 'N/A'}`)}`;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-[#06120a] text-center px-5 py-12">

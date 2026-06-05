@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldCheck, ChevronDown, X } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -18,6 +18,75 @@ const copy = {
 };
 
 const categoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
+
+const INDIA_STATES = [
+  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
+  'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
+  'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab',
+  'Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh',
+  'Uttarakhand','West Bengal','Andaman & Nicobar Islands','Chandigarh',
+  'Dadra & Nagar Haveli and Daman & Diu','Delhi','Jammu & Kashmir','Ladakh',
+  'Lakshadweep','Puducherry'
+];
+
+function StateDropdown({ value, onChange, required, inputCls, labelCls }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef(null);
+  const filtered = INDIA_STATES.filter(s => s.toLowerCase().includes(search.toLowerCase()));
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className={`${inputCls} flex items-center justify-between text-left`}
+      >
+        <span className={value ? 'text-[#f4f9f4]' : 'text-[#84a190]'}>{value || 'Select State'}</span>
+        <ChevronDown size={16} className={`text-[#84a190] transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 w-full mt-1 rounded-xl border border-[rgba(168,193,176,0.2)] bg-[#0e2216] shadow-2xl overflow-hidden">
+          <div className="p-2 border-b border-[rgba(168,193,176,0.1)] flex items-center gap-2">
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search state..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="flex-1 bg-transparent text-[#f4f9f4] text-sm outline-none placeholder-[#84a190] px-1"
+            />
+            {search && <button type="button" onClick={() => setSearch('')}><X size={13} className="text-[#84a190]" /></button>}
+          </div>
+          <div className="max-h-52 overflow-y-auto">
+            {filtered.length === 0
+              ? <div className="px-4 py-3 text-sm text-[#84a190]">No state found</div>
+              : filtered.map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => { onChange(s); setOpen(false); setSearch(''); }}
+                  className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-[rgba(243,116,70,0.12)] ${
+                    value === s ? 'text-[#f37446] font-bold bg-[rgba(243,116,70,0.08)]' : 'text-[#cdded2]'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const defaultFormFields = {
   name: { visible: true, label: copy.name, required: true },
@@ -44,7 +113,7 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ name: '', mobile: '', email: '', careerCategory: '8th Class', notes: '' });
+  const [form, setForm] = useState({ name: '', mobile: '', email: '', state: '', careerCategory: '8th Class', notes: '' });
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/public/active-landing-page`)
@@ -65,11 +134,12 @@ export default function PaymentPage() {
     e.preventDefault();
     setSubmitting(true);
     setError('');
+    if (!form.state) { setError('Please select your state.'); setSubmitting(false); return; }
     try {
       const res = await fetch(`${API_BASE_URL}/api/payment/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, serviceType: form.careerCategory, preferredLanguage: 'hinglish', landingPageId: landingPage?._id })
+        body: JSON.stringify({ ...form, serviceType: form.careerCategory, preferredLanguage: 'hinglish', landingPageId: landingPage?._id, state: form.state })
       });
       const order = await res.json();
       if (!res.ok) throw new Error(order.message || 'Payment order failed.');
@@ -143,14 +213,43 @@ export default function PaymentPage() {
         <form onSubmit={submit}>
           {[
             { field: 'name', type: 'text' },
-            { field: 'mobile', type: 'tel', minLength: 10 },
             { field: 'email', type: 'email' },
-          ].filter(({ field }) => formFields[field]?.visible !== false).map(({ field, type, minLength }) => (
+          ].filter(({ field }) => formFields[field]?.visible !== false).map(({ field, type }) => (
             <div key={field} className="mb-5">
               <label className={labelCls}>{formFields[field]?.label || copy[field]}</label>
-              <input className={inputCls} type={type} required={formFields[field]?.required} minLength={minLength} value={form[field]} onChange={e => update(field, e.target.value)} />
+              <input className={inputCls} type={type} required={formFields[field]?.required} value={form[field]} onChange={e => update(field, e.target.value)} />
             </div>
           ))}
+
+          {formFields.mobile?.visible !== false && (
+            <div className="mb-5">
+              <label className={labelCls}>{formFields.mobile?.label || copy.mobile}</label>
+              <div className="flex gap-2">
+                <div className="flex items-center justify-center rounded-xl border border-[rgba(168,193,176,0.14)] bg-[rgba(14,34,22,.75)] px-3 text-[#f4f9f4] font-bold text-sm backdrop-blur-sm select-none whitespace-nowrap">
+                  +91
+                </div>
+                <input
+                  className={inputCls}
+                  type="tel"
+                  required={formFields.mobile?.required}
+                  maxLength={10}
+                  value={form.mobile}
+                  onChange={e => update('mobile', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mb-5">
+            <label className={labelCls}>State / राज्य <span className="text-[#f37446]">*</span></label>
+            <StateDropdown
+              value={form.state}
+              onChange={v => update('state', v)}
+              required
+              inputCls={inputCls}
+              labelCls={labelCls}
+            />
+          </div>
 
           {formFields.careerCategory?.visible !== false && (
             <div className="mb-5">

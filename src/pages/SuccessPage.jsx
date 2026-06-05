@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, Loader2, MessageCircle, Home } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
 function formatMeetingMode(mode = '') {
   return {
@@ -40,7 +41,7 @@ export default function SuccessPage() {
     }
     const support = paymentData?.landingPageId?.settings?.whatsappNumber || '+919999999999';
     const msg = `Hello Prakrit Astro, I have successfully registered for Prakrit Career Boost. Order ID: ${orderId}. Please share the WhatsApp group link.`;
-    window.open(`https://wa.me/${support.replace('+', '')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/${formatWhatsAppNumber(support)}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   };
 
   if (loading) {
