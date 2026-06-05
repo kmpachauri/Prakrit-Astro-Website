@@ -7,7 +7,7 @@ const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 export default function FailedPage() {
   const [params] = useSearchParams();
   const orderId = params.get('orderId');
-  const [supportNumber, setSupportNumber] = useState('+919999999999');
+  const [supportNumber, setSupportNumber] = useState('+919660715539');
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/public/active-landing-page`)

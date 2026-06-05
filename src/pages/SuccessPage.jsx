@@ -39,7 +39,7 @@ export default function SuccessPage() {
       window.open(groupLink, '_blank', 'noopener,noreferrer');
       return;
     }
-    const support = paymentData?.landingPageId?.settings?.whatsappNumber || '+919999999999';
+    const support = paymentData?.landingPageId?.settings?.whatsappNumber || '+919660715539';
     const msg = `Hello Prakrit Astro, I have successfully registered for Prakrit Career Boost. Order ID: ${orderId}. Please share the WhatsApp group link.`;
     window.open(`https://wa.me/${formatWhatsAppNumber(support)}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   };
