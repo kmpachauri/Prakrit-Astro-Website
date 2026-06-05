@@ -12,12 +12,32 @@ import {
   Award, 
   Sparkles, 
   Clock, 
-  Users, 
-  TrendingUp, 
   Compass 
 } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const PAGE_CACHE_KEY = 'prakrit_landing_cache_v1';
+
+const readLandingCache = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem(PAGE_CACHE_KEY) || 'null');
+  } catch {
+    return null;
+  }
+};
+
+const writeLandingCache = (value) => {
+  try {
+    sessionStorage.setItem(PAGE_CACHE_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage failures.
+  }
+};
+
+const injectOfferPrice = (text = '', offerPrice) => {
+  if (!text || !offerPrice) return text;
+  return text.replace(/₹\s*\d+\/?-?/g, `₹${offerPrice}/-`);
+};
 
 const PAGE_COPY = {
   announcementBar: '🔥 सीमित सीटें उपलब्ध | केवल इस बैच के लिए ₹77/- विशेष ऑफर',
@@ -78,10 +98,12 @@ const PAGE_COPY = {
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [pageData, setPageData] = useState(null);
-  const [siteSettings, setSiteSettings] = useState(null);
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cached = readLandingCache();
+  const [pageData, setPageData] = useState(cached?.pageData || null);
+  const [siteSettings, setSiteSettings] = useState(cached?.siteSettings || null);
+  const [testimonials, setTestimonials] = useState(cached?.testimonials || []);
+  const [faqs, setFaqs] = useState(cached?.faqs || []);
+  const [loading, setLoading] = useState(!cached?.pageData);
   const [error, setError] = useState(null);
   const [openFaqId, setOpenFaqId] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 30, seconds: 0 });
@@ -89,20 +111,40 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const pageRes = await fetch(`${API_BASE_URL}/api/public/active-landing-page`);
+        if (!pageData) setLoading(true);
+        const [pageRes, settingsRes, testimonialsRes, faqsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/public/active-landing-page`),
+          fetch(`${API_BASE_URL}/api/public/site-settings`),
+          fetch(`${API_BASE_URL}/api/public/testimonials`),
+          fetch(`${API_BASE_URL}/api/public/faqs`)
+        ]);
         if (!pageRes.ok) throw new Error('Active landing page not found.');
         const pageDataJson = await pageRes.json();
+        const nextCache = {
+          pageData: pageDataJson,
+          siteSettings,
+          testimonials,
+          faqs
+        };
         setPageData(pageDataJson);
-        
-        const settingsRes = await fetch(`${API_BASE_URL}/api/public/site-settings`);
-        if (settingsRes.ok) setSiteSettings(await settingsRes.json());
-        
-        const testimonialsRes = await fetch(`${API_BASE_URL}/api/public/testimonials`);
-        if (testimonialsRes.ok) setTestimonials(await testimonialsRes.json());
+
+        if (settingsRes.ok) {
+          nextCache.siteSettings = await settingsRes.json();
+          setSiteSettings(nextCache.siteSettings);
+        }
+
+        if (testimonialsRes.ok) {
+          nextCache.testimonials = await testimonialsRes.json();
+          setTestimonials(nextCache.testimonials);
+        }
+        if (faqsRes.ok) {
+          nextCache.faqs = await faqsRes.json();
+          setFaqs(nextCache.faqs);
+        }
+        writeLandingCache(nextCache);
         
         setError(null);
-      } catch (err) {
+      } catch {
         setError('Failed to load page. Please try again later.');
       } finally {
         setLoading(false);
@@ -114,15 +156,24 @@ export default function LandingPage() {
   useEffect(() => {
     if (!pageData?.settings?.countdownEnabled) return;
     const totalSeconds = (pageData.settings.countdownHours || 2) * 3600 + (pageData.settings.countdownMinutes || 0) * 60;
-    let secondsRemaining = totalSeconds;
-    const timer = setInterval(() => {
-      if (secondsRemaining <= 0) { clearInterval(timer); return; }
-      secondsRemaining -= 1;
-      setTimeLeft({ 
-        hours: Math.floor(secondsRemaining / 3600), 
-        minutes: Math.floor((secondsRemaining % 3600) / 60), 
-        seconds: secondsRemaining % 60 
+    const timerKey = `prakrit_countdown_end_${pageData._id}_${totalSeconds}`;
+    let endAt = Number(localStorage.getItem(timerKey));
+    if (!endAt) {
+      endAt = Date.now() + totalSeconds * 1000;
+      localStorage.setItem(timerKey, String(endAt));
+    }
+    const updateTimer = () => {
+      const secondsRemaining = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+      setTimeLeft({
+        hours: Math.floor(secondsRemaining / 3600),
+        minutes: Math.floor((secondsRemaining % 3600) / 60),
+        seconds: secondsRemaining % 60
       });
+      return secondsRemaining;
+    };
+    updateTimer();
+    const timer = setInterval(() => {
+      if (updateTimer() <= 0) clearInterval(timer);
     }, 1000);
     return () => clearInterval(timer);
   }, [pageData]);
@@ -166,7 +217,36 @@ export default function LandingPage() {
 
   const pricing = pageData.pricing || { originalPrice: 1999, offerPrice: 77 };
   const settings = pageData.settings || {};
-  const mentorName = pageData?.mentorName || 'Pandit Ramendra & Rekha';
+  const content = pageData.content?.hinglish || {};
+  const copy = {
+    announcementBar: injectOfferPrice(content.announcementBar || PAGE_COPY.announcementBar, pricing.offerPrice),
+    hero: { ...PAGE_COPY.hero, ...(content.hero || {}) },
+    problems: {
+      title: content.problemSection?.title || PAGE_COPY.problems.title,
+      items: content.problemSection?.problems?.length ? content.problemSection.problems : PAGE_COPY.problems.items,
+      conclusion: content.problemSection?.solutionSubtitle || PAGE_COPY.problems.conclusion
+    },
+    workshop: {
+      title: content.insideSection?.title || PAGE_COPY.workshop.title,
+      items: content.insideSection?.points?.length ? content.insideSection.points : PAGE_COPY.workshop.items
+    },
+    reveal: {
+      badge: content.revealSection?.subtitle || PAGE_COPY.reveal.badge,
+      title: content.revealSection?.title || PAGE_COPY.reveal.title,
+      desc: content.revealSection?.desc || PAGE_COPY.reveal.desc,
+      bullets: content.revealSection?.bullets?.length ? content.revealSection.bullets : PAGE_COPY.reveal.bullets
+    },
+    mentor: { ...PAGE_COPY.mentor, ...(content.mentorSection || {}) },
+    faqs: faqs.length ? faqs.filter(f => f.language === 'hinglish' || !f.language).map(f => ({ question: f.question, answer: f.answer })) : PAGE_COPY.faqs,
+    footerCta: {
+      title: content.footerSection?.urgencyTitle || PAGE_COPY.footerCta.title,
+      seats: content.footerSection?.urgencyDesc || PAGE_COPY.footerCta.seats,
+      price: injectOfferPrice(content.footerSection?.urgencyPrice || PAGE_COPY.footerCta.price, pricing.offerPrice),
+      cta: content.footerSection?.ctaText || PAGE_COPY.footerCta.cta,
+      secureText: content.footerSection?.secureText || '100% सुरक्षित गेटवे: Razorpay, UPI, Credit/Debit Cards'
+    }
+  };
+  const mentorName = copy.mentor.name || 'Pandit Ramendra & Rekha';
   const filteredTestimonials = testimonials.filter(t => t.language === 'hinglish' || !t.language);
 
   return (
@@ -178,11 +258,11 @@ export default function LandingPage() {
       <div className="absolute bottom-1/4 left-10 w-[400px] h-[400px] bg-[#ecc472]/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Announcement Bar */}
-      {PAGE_COPY.announcementBar && (
+      {copy.announcementBar && (
         <div className="bg-gradient-to-r from-[#d6431a] via-[#f37446] to-[#d6431a] text-white text-center py-2.5 px-4 text-xs md:text-sm font-extrabold tracking-wide z-[100] relative shadow-md border-b border-white/10">
           <span className="inline-flex items-center gap-2">
             <Sparkles size={14} className="animate-pulse text-[#ecc472]" />
-            {PAGE_COPY.announcementBar}
+            {copy.announcementBar}
           </span>
         </div>
       )}
@@ -215,22 +295,22 @@ export default function LandingPage() {
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[#ecc472] text-xs font-bold tracking-wider border border-[#ecc472]/30 bg-[#ecc472]/10 backdrop-blur-md mb-6 animate-fade-in">
               <Sparkles size={12} className="animate-spin-slow" />
-              {PAGE_COPY.hero.question}
+              {copy.hero.question}
             </div>
 
             <h1 className="font-heading font-black text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.15] tracking-tight text-white mb-6">
-              {PAGE_COPY.hero.headline.split(' ').map((word, i) => 
+              {copy.hero.headline.split(' ').map((word, i) => 
                 word.includes('बर्बाद') || word.includes('लाखों') ? <span key={i} className="text-[#f37446]">{word} </span> : word + ' '
               )}
             </h1>
 
             <p className="text-[#cdded2] text-base md:text-lg lg:text-xl leading-relaxed mb-6 max-w-2xl border-l-2 border-[#ecc472]/40 pl-4">
-              {PAGE_COPY.hero.subheadline}
+              {copy.hero.subheadline}
             </p>
 
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white font-bold text-sm border border-white/10 bg-white/5 backdrop-blur-md mb-8">
               <Clock size={16} className="text-[#f37446]" />
-              {PAGE_COPY.hero.masterclassTag}
+              {copy.hero.masterclassTag}
             </div>
 
             {/* Price Badge for Mobile (Hidden on Desktop grid) */}
@@ -239,13 +319,13 @@ export default function LandingPage() {
                 <span className="text-[#84a190] line-through text-sm mr-2">₹{pricing.originalPrice}</span>
                 <span className="text-2xl font-black text-[#ecc472]">₹{pricing.offerPrice}/-</span>
               </div>
-              <span className="text-xs text-[#cdded2] bg-[#f37446]/20 px-2 py-1 rounded border border-[#f37446]/30">{PAGE_COPY.hero.priceNote}</span>
+              <span className="text-xs text-[#cdded2] bg-[#f37446]/20 px-2 py-1 rounded border border-[#f37446]/30">{copy.hero.priceNote}</span>
             </div>
 
             {settings.paymentEnabled && (
               <button onClick={handleBookNow}
                 className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-[#f37446] via-[#d6431a] to-[#f37446] text-white font-black text-base md:text-lg shadow-xl shadow-[#f37446]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-wide group">
-                {PAGE_COPY.hero.ctaText}
+                {copy.hero.ctaText}
                 <span className="block text-xs font-normal text-white/80 normal-case mt-0.5">साइनअप करने में केवल 1 मिनट लगता है</span>
               </button>
             )}
@@ -267,7 +347,7 @@ export default function LandingPage() {
                 
                 {/* AI Astrology Visual Overlay */}
                 <img 
-                  src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=600" 
+                  src={pageData.media?.heroImage || '/images/career-boost-hero.png'}
                   alt="Cosmic Energy Chart" 
                   className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-screen pointer-events-none" 
                 />
@@ -282,7 +362,7 @@ export default function LandingPage() {
                 
                 {/* Pricing Box embedded inside card */}
                 <div className="hidden lg:block w-full bg-black/40 border border-white/10 rounded-2xl p-4 relative z-10">
-                  <p className="text-xs text-[#84a190] uppercase tracking-wider mb-1">{PAGE_COPY.hero.priceNote}</p>
+                  <p className="text-xs text-[#84a190] uppercase tracking-wider mb-1">{copy.hero.priceNote}</p>
                   <div className="flex justify-center items-baseline gap-2">
                     <span className="text-sm line-through text-[#84a190]">₹{pricing.originalPrice}</span>
                     <span className="text-3xl font-black text-[#ecc472]">₹{pricing.offerPrice}</span>
@@ -302,13 +382,13 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {PAGE_COPY.problems.title}
+              {copy.problems.title}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-[#f37446] to-[#ecc472] mx-auto rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {PAGE_COPY.problems.items.map((prob, i) => (
+            {copy.problems.items.map((prob, i) => (
               <div key={i} className="group relative rounded-2xl border border-white/5 bg-gradient-to-b from-white/[0.04] to-transparent p-6 md:p-8 backdrop-blur-xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:border-[#f37446]/30 hover:shadow-xl hover:shadow-[#f37446]/5">
                 <div className="w-12 h-12 rounded-xl bg-[#f37446]/10 border border-[#f37446]/20 flex items-center justify-center text-[#f37446] mb-6 group-hover:bg-[#f37446] group-hover:text-white transition-all duration-300">
                   <HelpCircle size={22} />
@@ -323,7 +403,7 @@ export default function LandingPage() {
             style={{ background: 'linear-gradient(135deg, #0e2913, #051107)' }}>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,116,70,0.1),transparent_65%)] pointer-events-none" />
             <p className="relative z-10 font-heading font-black text-[#ecc472] text-lg md:text-xl flex flex-col sm:flex-row items-center justify-center gap-2">
-              {PAGE_COPY.problems.conclusion}
+              {copy.problems.conclusion}
             </p>
           </div>
         </div>
@@ -334,13 +414,13 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {PAGE_COPY.workshop.title}
+              {copy.workshop.title}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-[#25d366] to-[#ecc472] mx-auto rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PAGE_COPY.workshop.items.map((item, i) => (
+            {copy.workshop.items.map((item, i) => (
               <div key={i} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-md hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 bg-gradient-to-br from-[#f37446]/20 to-[#ecc472]/20 border border-[#f37446]/20">
                   <CheckCircle className="text-[#ecc472]" size={20} />
@@ -363,17 +443,17 @@ export default function LandingPage() {
 
           <div className="relative z-10">
             <span className="inline-flex rounded-full bg-gradient-to-r from-[#f37446] to-[#d6431a] text-white text-[10px] tracking-widest font-black uppercase px-4 py-1.5 shadow-md mb-6">
-              {PAGE_COPY.reveal.badge}
+              {copy.reveal.badge}
             </span>
             <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {PAGE_COPY.reveal.title}
+              {copy.reveal.title}
             </h3>
             <p className="text-[#cdded2] text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed">
-              {PAGE_COPY.reveal.desc}
+              {copy.reveal.desc}
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-              {PAGE_COPY.reveal.bullets.map((bullet, i) => (
+              {copy.reveal.bullets.map((bullet, i) => (
                 <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm text-white hover:bg-white/[0.05] transition-all duration-200">
                   <Sparkles className="text-[#ecc472] w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span className="text-xs md:text-sm leading-relaxed">{bullet}</span>
@@ -389,7 +469,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {PAGE_COPY.mentor.title}
+              {copy.mentor.title}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-[#f37446] to-[#ecc472] mx-auto rounded-full" />
           </div>
@@ -397,17 +477,17 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 md:gap-12 items-center p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl shadow-xl">
             <div className="w-44 h-44 md:w-52 md:h-52 rounded-2xl overflow-hidden mx-auto border-2 border-[#ecc472]/30 shadow-lg relative group">
               <img
-                src={pageData.media?.guruImage || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=300'}
+                src={pageData.media?.guruImage || '/images/profile_logo.jpeg'}
                 alt={mentorName} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300'; }}
+                onError={e => { e.target.src = '/images/profile_logo.jpeg'; }}
               />
             </div>
             <div className="text-center md:text-left">
               <h3 className="font-heading font-black text-xl md:text-2xl text-white mb-2">{mentorName}</h3>
-              <p className="text-[#f37446] text-xs md:text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/5 pb-3">{PAGE_COPY.mentor.role}</p>
+              <p className="text-[#f37446] text-xs md:text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/5 pb-3">{copy.mentor.role}</p>
               <p className="text-[#cdded2] text-sm md:text-base leading-relaxed italic text-white/90">
-                "{PAGE_COPY.mentor.quote}"
+                "{copy.mentor.quote}"
               </p>
             </div>
           </div>
@@ -448,7 +528,7 @@ export default function LandingPage() {
       )}
 
       {/* FAQ Section */}
-      {PAGE_COPY.faqs.length > 0 && (
+      {copy.faqs.length > 0 && (
         <section className="py-20 md:py-28 px-4 md:px-12 bg-[#030a05]">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-16">
@@ -459,7 +539,7 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              {PAGE_COPY.faqs.map((faq, i) => {
+              {copy.faqs.map((faq, i) => {
                 const isOpen = openFaqId === i;
                 return (
                   <div key={i} className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white/[0.05] border-[#f37446]/30 shadow-md' : 'bg-white/[0.02] border-white/5 hover:border-white/10'}`}>
@@ -487,10 +567,10 @@ export default function LandingPage() {
           
           <div className="max-w-4xl mx-auto">
             <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white mb-4 leading-tight">
-              {PAGE_COPY.footerCta.title}
+              {copy.footerCta.title}
             </h3>
             <p className="text-[#f37446] font-bold text-sm md:text-base tracking-wide mb-8">
-              {PAGE_COPY.footerCta.seats}
+              {copy.footerCta.seats}
             </p>
 
             {/* Premium Dynamic Timer Card */}
@@ -512,18 +592,18 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <p className="text-[#ecc472] font-semibold text-sm md:text-base mb-6">{PAGE_COPY.footerCta.price}</p>
+            <p className="text-[#ecc472] font-semibold text-sm md:text-base mb-6">{copy.footerCta.price}</p>
 
             {settings.paymentEnabled && (
               <button onClick={handleBookNow}
                 className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gradient-to-r from-[#f37446] via-[#d6431a] to-[#f37446] text-white font-black text-base md:text-lg shadow-xl shadow-[#f37446]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
-                {PAGE_COPY.footerCta.cta}
+                {copy.footerCta.cta}
               </button>
             )}
 
             <div className="flex items-center justify-center gap-2 mt-6 text-[#cdded2] text-xs opacity-80">
               <ShieldCheck size={14} className="text-[#ecc472]" />
-              <span>100% सुरक्षित गेटवे: Razorpay, UPI, Credit/Debit Cards</span>
+              <span>{copy.footerCta.secureText}</span>
             </div>
           </div>
         </section>

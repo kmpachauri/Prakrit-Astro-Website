@@ -19,6 +19,14 @@ const copy = {
 
 const categoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
 
+const defaultFormFields = {
+  name: { visible: true, label: copy.name, required: true },
+  mobile: { visible: true, label: copy.mobile, required: true },
+  email: { visible: true, label: copy.email, required: false },
+  careerCategory: { visible: true, label: copy.careerCategory, required: true },
+  notes: { visible: true, label: copy.notes, required: false }
+};
+
 function loadRazorpayScript() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
@@ -47,11 +55,16 @@ export default function PaymentPage() {
   }, []);
 
   const amount = landingPage?.pricing?.offerPrice || 0;
+  const savedFormFields = landingPage?.settings?.formFields || {};
+  const formFields = Object.fromEntries(
+    Object.entries(defaultFormFields).map(([field, config]) => [field, { ...config, ...(savedFormFields[field] || {}) }])
+  );
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
   const submit = async (e) => {
     e.preventDefault();
-    setSubmitting(true); setError('');
+    setSubmitting(true);
+    setError('');
     try {
       const res = await fetch(`${API_BASE_URL}/api/payment/create`, {
         method: 'POST',
@@ -60,17 +73,25 @@ export default function PaymentPage() {
       });
       const order = await res.json();
       if (!res.ok) throw new Error(order.message || 'Payment order failed.');
-      if (order.mode === 'mock') { navigate(`/payment-success?orderId=${order.orderId}`); return; }
+      if (order.mode === 'mock') {
+        navigate(`/payment-success?orderId=${order.orderId}`);
+        return;
+      }
       const loaded = await loadRazorpayScript();
       if (!loaded || !window.Razorpay) throw new Error('Unable to load Razorpay.');
       new window.Razorpay({
-        key: order.keyId, amount: Math.round(order.amount * 100), currency: order.currency,
-        name: 'Prakrit Astro', description: form.careerCategory, order_id: order.orderId,
+        key: order.keyId,
+        amount: Math.round(order.amount * 100),
+        currency: order.currency,
+        name: 'Prakrit Astro',
+        description: form.careerCategory,
+        order_id: order.orderId,
         prefill: { name: form.name, email: form.email, contact: form.mobile },
         theme: { color: '#7b341e' },
         handler: async (p) => {
           const v = await fetch(`${API_BASE_URL}/api/payment/verify`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ orderId: p.razorpay_order_id, paymentId: p.razorpay_payment_id, signature: p.razorpay_signature, rawResponse: p })
           });
           const vData = await v.json();
@@ -100,8 +121,7 @@ export default function PaymentPage() {
   return (
     <main className="min-h-screen px-5 md:px-10 py-10 md:py-20" style={{ background: 'linear-gradient(180deg,#06120a,#0a1a10)' }}>
       <div className="w-full max-w-3xl mx-auto">
-        <button type="button" onClick={() => navigate('/')}
-          className="inline-flex items-center gap-2 text-[#f37446] font-extrabold hover:gap-3.5 transition-all mb-8">
+        <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-2 text-[#f37446] font-extrabold hover:gap-3.5 transition-all mb-8">
           <ArrowLeft size={16} />{copy.back}
         </button>
 
@@ -110,9 +130,7 @@ export default function PaymentPage() {
           <p className="text-[#cdded2] mt-2">{copy.subtitle}</p>
         </div>
 
-        {/* Summary */}
-        <div className="flex items-center justify-between flex-wrap gap-4 p-6 rounded-2xl mb-6 border border-[rgba(236,88,38,.25)] backdrop-blur-xl"
-          style={{ background: 'linear-gradient(135deg,rgba(23,53,36,.85),rgba(14,34,22,.85))' }}>
+        <div className="flex items-center justify-between flex-wrap gap-4 p-6 rounded-2xl mb-6 border border-[rgba(236,88,38,.25)] backdrop-blur-xl" style={{ background: 'linear-gradient(135deg,rgba(23,53,36,.85),rgba(14,34,22,.85))' }}>
           <div>
             <h5 className="font-bold text-white">{landingPage?.name || 'Prakrit Career Boost'}</h5>
             <p className="text-[#cdded2] text-sm">{landingPage?.settings?.meetingDescription || 'Payment ke baad WhatsApp group join link milega.'}</p>
@@ -120,36 +138,37 @@ export default function PaymentPage() {
           <span className="font-heading font-black text-[2.1rem] text-[#ecc472] drop-shadow-[0_2px_14px_rgba(217,168,74,.35)]">₹{amount}</span>
         </div>
 
-        {error && (
-          <div className="rounded-xl border border-red-500 bg-[rgba(255,93,101,.12)] text-red-300 px-4 py-3 mb-5 text-sm">{error}</div>
-        )}
+        {error && <div className="rounded-xl border border-red-500 bg-[rgba(255,93,101,.12)] text-red-300 px-4 py-3 mb-5 text-sm">{error}</div>}
 
         <form onSubmit={submit}>
           {[
-            { label: copy.name, field: 'name', type: 'text', required: true },
-            { label: copy.mobile, field: 'mobile', type: 'tel', required: true, minLength: 10 },
-            { label: copy.email, field: 'email', type: 'email', required: false },
-          ].map(({ label, field, type, required, minLength }) => (
+            { field: 'name', type: 'text' },
+            { field: 'mobile', type: 'tel', minLength: 10 },
+            { field: 'email', type: 'email' },
+          ].filter(({ field }) => formFields[field]?.visible !== false).map(({ field, type, minLength }) => (
             <div key={field} className="mb-5">
-              <label className={labelCls}>{label}</label>
-              <input className={inputCls} type={type} required={required} minLength={minLength} value={form[field]} onChange={e => update(field, e.target.value)} />
+              <label className={labelCls}>{formFields[field]?.label || copy[field]}</label>
+              <input className={inputCls} type={type} required={formFields[field]?.required} minLength={minLength} value={form[field]} onChange={e => update(field, e.target.value)} />
             </div>
           ))}
 
-          <div className="mb-5">
-            <label className={labelCls}>{copy.careerCategory}</label>
-            <select className={inputCls} value={form.careerCategory} onChange={e => update('careerCategory', e.target.value)}>
-              {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
+          {formFields.careerCategory?.visible !== false && (
+            <div className="mb-5">
+              <label className={labelCls}>{formFields.careerCategory?.label || copy.careerCategory}</label>
+              <select className={inputCls} required={formFields.careerCategory?.required} value={form.careerCategory} onChange={e => update('careerCategory', e.target.value)}>
+                {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+          )}
 
-          <div className="mb-6">
-            <label className={labelCls}>{copy.notes}</label>
-            <textarea className={inputCls} rows={4} value={form.notes} onChange={e => update('notes', e.target.value)} />
-          </div>
+          {formFields.notes?.visible !== false && (
+            <div className="mb-6">
+              <label className={labelCls}>{formFields.notes?.label || copy.notes}</label>
+              <textarea className={inputCls} rows={4} required={formFields.notes?.required} value={form.notes} onChange={e => update('notes', e.target.value)} />
+            </div>
+          )}
 
-          <button type="submit" disabled={submitting}
-            className="ripple-btn relative overflow-hidden w-full min-h-[60px] rounded-[14px] bg-gradient-to-br from-[#f37446] to-[#d6431a] text-white font-extrabold text-lg shadow-[0_16px_44px_-12px_rgba(236,88,38,.65)] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+          <button type="submit" disabled={submitting} className="ripple-btn relative overflow-hidden w-full min-h-[60px] rounded-[14px] bg-gradient-to-br from-[#f37446] to-[#d6431a] text-white font-extrabold text-lg shadow-[0_16px_44px_-12px_rgba(236,88,38,.65)] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
             {submitting ? 'Please wait...' : `${copy.pay} ₹${amount}`}
           </button>
         </form>

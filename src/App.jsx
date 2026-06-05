@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import PaymentPage from './pages/PaymentPage';
 import SuccessPage from './pages/SuccessPage';
@@ -19,6 +19,7 @@ function App() {
           <Route path="/terms" element={<StaticPage type="terms" />} />
           <Route path="/refund-policy" element={<StaticPage type="refund" />} />
           <Route path="/contact" element={<StaticPage type="contact" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>

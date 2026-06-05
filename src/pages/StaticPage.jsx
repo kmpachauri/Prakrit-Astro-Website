@@ -1,57 +1,57 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-const pages = {
+const content = {
   privacy: {
     title: 'Privacy Policy',
-    body: [
-      'Prakrit Career Boost me parent name, mobile number, email aur student stream/career concern sirf booking, support aur masterclass process ke liye use hota hai.',
-      'Hum payment credentials store nahi karte. Payment gateway apni secure checkout process handle karta hai.',
-      'Aapke details confidential rakhe jate hain aur bina zaroorat third-party ke saath share nahi kiye jate.'
+    items: [
+      'We collect registration details only to process your booking and share session updates.',
+      'Payment details are processed by secure payment gateways and are not stored as card data by Prakrit Astro.',
+      'Support communication may happen through WhatsApp, phone, or email.'
     ]
   },
   terms: {
     title: 'Terms & Conditions',
-    body: [
-      'Prakrit Career Boost ek guidance-based online masterclass hai jo 8th, 9th aur 10th class students ke parents ke liye career/stream clarity par focused hai.',
-      'No guaranteed marks, admission, rank, result ya future outcome promised hai.',
-      'Payment complete hone ke baad aapko WhatsApp group aur further instructions milenge.'
+    items: [
+      'Registration confirms your interest in the selected Prakrit Career Boost session.',
+      'Session details and group instructions are shared after successful payment.',
+      'Please provide accurate contact details for smooth communication.'
     ]
   },
   refund: {
     title: 'Refund Policy',
-    body: [
-      'Digital registration aur limited-seat session hone ki wajah se successful payment generally non-refundable hota hai.',
+    items: [
       'Duplicate payment ya technical issue ke case me support WhatsApp par order details share karein.',
-      'Eligible refunds payment gateway timeline ke hisaab se process honge.'
+      'Refund eligibility depends on payment status, duplicate charge confirmation, and session access status.',
+      'Approved refunds are processed through the original payment method where possible.'
     ]
   },
   contact: {
-    title: 'Contact',
-    body: [
+    title: 'Contact Support',
+    items: [
       'Prakrit Astro support ke liye WhatsApp button use karein.',
-      'Payment, group link ya session instructions se related query me apna registered mobile number aur order ID mention karein.'
+      'Payment, group link ya session instructions se related query me apna registered mobile number aur order ID mention karein.',
+      'We try to respond as quickly as possible during working hours.'
     ]
   }
 };
 
-export default function StaticPage({ type }) {
-  const navigate = useNavigate();
-  const page = pages[type] || pages.terms;
-
+export default function StaticPage({ type = 'privacy' }) {
+  const page = content[type] || content.privacy;
   return (
-    <main className="min-h-screen px-5 md:px-10 py-10 md:py-20" style={{ background: 'linear-gradient(180deg,#06120a,#0a1a10)' }}>
-      <div className="w-full max-w-3xl mx-auto">
-        <button type="button" onClick={() => navigate('/')}
-          className="inline-flex items-center gap-2 text-[#f37446] font-extrabold hover:gap-3.5 transition-all mb-8">
+    <main className="min-h-screen bg-[#06120a] px-5 py-10 md:py-16 text-[#f4f9f4]">
+      <div className="mx-auto max-w-3xl">
+        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-[#f37446] font-extrabold">
           <ArrowLeft size={16} /> Back
-        </button>
-        <div className="p-7 md:p-10 rounded-2xl bg-[rgba(23,53,36,0.55)] border border-[rgba(168,193,176,0.14)] backdrop-blur-xl shadow-[0_8px_22px_-6px_rgba(0,0,0,.55)]">
-          <h1 className="font-heading font-extrabold text-[clamp(1.8rem,4vw,3rem)] text-white mb-5">{page.title}</h1>
-          {page.body.map((para) => (
-            <p key={para} className="text-[#cdded2] text-base leading-relaxed mb-4 last:mb-0">{para}</p>
-          ))}
+        </Link>
+        <div className="rounded-3xl border border-white/10 bg-[#0e2216]/80 p-7 md:p-10">
+          <h1 className="font-heading text-3xl md:text-4xl font-black text-white mb-6">{page.title}</h1>
+          <div className="space-y-4 text-[#cdded2]">
+            {page.items.map((item) => (
+              <p key={item}>{item}</p>
+            ))}
+          </div>
         </div>
       </div>
     </main>
