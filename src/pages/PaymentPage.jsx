@@ -1,0 +1,164 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+const copy = {
+  title: 'Prakrit Career Boost Booking',
+  subtitle: 'नीचे parent details fill karein. Payment ke baad WhatsApp group join link milega.',
+  name: 'Parent Name / माता-पिता का नाम',
+  mobile: 'Mobile Number',
+  email: 'Email',
+  careerCategory: 'Student Class / Class',
+  notes: 'Child ke career/stream concern',
+  pay: 'Secure Payment Karein',
+  secured: 'Razorpay secure checkout',
+  back: 'Back'
+};
+
+const categoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
+
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (window.Razorpay) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+export default function PaymentPage() {
+  const navigate = useNavigate();
+  const [landingPage, setLandingPage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [form, setForm] = useState({ name: '', mobile: '', email: '', careerCategory: '8th Class', notes: '' });
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/public/active-landing-page`)
+      .then(res => { if (!res.ok) throw new Error('Active landing page not found.'); return res.json(); })
+      .then(setLandingPage)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const amount = landingPage?.pricing?.offerPrice || 0;
+  const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true); setError('');
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/payment/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, serviceType: form.careerCategory, preferredLanguage: 'hinglish', landingPageId: landingPage?._id })
+      });
+      const order = await res.json();
+      if (!res.ok) throw new Error(order.message || 'Payment order failed.');
+      if (order.mode === 'mock') { navigate(`/payment-success?orderId=${order.orderId}`); return; }
+      const loaded = await loadRazorpayScript();
+      if (!loaded || !window.Razorpay) throw new Error('Unable to load Razorpay.');
+      new window.Razorpay({
+        key: order.keyId, amount: Math.round(order.amount * 100), currency: order.currency,
+        name: 'Prakrit Astro', description: form.careerCategory, order_id: order.orderId,
+        prefill: { name: form.name, email: form.email, contact: form.mobile },
+        theme: { color: '#7b341e' },
+        handler: async (p) => {
+          const v = await fetch(`${API_BASE_URL}/api/payment/verify`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: p.razorpay_order_id, paymentId: p.razorpay_payment_id, signature: p.razorpay_signature, rawResponse: p })
+          });
+          const vData = await v.json();
+          navigate(vData.success ? `/payment-success?orderId=${p.razorpay_order_id}` : `/payment-failed?orderId=${p.razorpay_order_id}`);
+        },
+        modal: { ondismiss: () => navigate(`/payment-failed?orderId=${order.orderId}`) }
+      }).open();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#06120a] gap-4">
+        <Loader2 className="animate-spin text-[#ecc472]" size={42} />
+        <p className="text-[#cdded2]">Loading booking details...</p>
+      </div>
+    );
+  }
+
+  const inputCls = "w-full border border-[rgba(168,193,176,0.14)] rounded-xl bg-[rgba(14,34,22,.75)] text-[#f4f9f4] px-4 py-3.5 outline-none backdrop-blur-sm transition focus:border-[#f37446] focus:shadow-[0_0_0_4px_rgba(236,88,38,.3)] focus:bg-[rgba(14,34,22,.95)]";
+  const labelCls = "block text-[#f4f9f4] font-bold text-sm mb-2";
+
+  return (
+    <main className="min-h-screen px-5 md:px-10 py-10 md:py-20" style={{ background: 'linear-gradient(180deg,#06120a,#0a1a10)' }}>
+      <div className="w-full max-w-3xl mx-auto">
+        <button type="button" onClick={() => navigate('/')}
+          className="inline-flex items-center gap-2 text-[#f37446] font-extrabold hover:gap-3.5 transition-all mb-8">
+          <ArrowLeft size={16} />{copy.back}
+        </button>
+
+        <div className="text-center mb-9">
+          <h2 className="font-heading font-extrabold text-[clamp(1.85rem,3vw,2.8rem)] text-white">{copy.title}</h2>
+          <p className="text-[#cdded2] mt-2">{copy.subtitle}</p>
+        </div>
+
+        {/* Summary */}
+        <div className="flex items-center justify-between flex-wrap gap-4 p-6 rounded-2xl mb-6 border border-[rgba(236,88,38,.25)] backdrop-blur-xl"
+          style={{ background: 'linear-gradient(135deg,rgba(23,53,36,.85),rgba(14,34,22,.85))' }}>
+          <div>
+            <h5 className="font-bold text-white">{landingPage?.name || 'Prakrit Career Boost'}</h5>
+            <p className="text-[#cdded2] text-sm">{landingPage?.settings?.meetingDescription || 'Payment ke baad WhatsApp group join link milega.'}</p>
+          </div>
+          <span className="font-heading font-black text-[2.1rem] text-[#ecc472] drop-shadow-[0_2px_14px_rgba(217,168,74,.35)]">₹{amount}</span>
+        </div>
+
+        {error && (
+          <div className="rounded-xl border border-red-500 bg-[rgba(255,93,101,.12)] text-red-300 px-4 py-3 mb-5 text-sm">{error}</div>
+        )}
+
+        <form onSubmit={submit}>
+          {[
+            { label: copy.name, field: 'name', type: 'text', required: true },
+            { label: copy.mobile, field: 'mobile', type: 'tel', required: true, minLength: 10 },
+            { label: copy.email, field: 'email', type: 'email', required: false },
+          ].map(({ label, field, type, required, minLength }) => (
+            <div key={field} className="mb-5">
+              <label className={labelCls}>{label}</label>
+              <input className={inputCls} type={type} required={required} minLength={minLength} value={form[field]} onChange={e => update(field, e.target.value)} />
+            </div>
+          ))}
+
+          <div className="mb-5">
+            <label className={labelCls}>{copy.careerCategory}</label>
+            <select className={inputCls} value={form.careerCategory} onChange={e => update('careerCategory', e.target.value)}>
+              {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+
+          <div className="mb-6">
+            <label className={labelCls}>{copy.notes}</label>
+            <textarea className={inputCls} rows={4} value={form.notes} onChange={e => update('notes', e.target.value)} />
+          </div>
+
+          <button type="submit" disabled={submitting}
+            className="ripple-btn relative overflow-hidden w-full min-h-[60px] rounded-[14px] bg-gradient-to-br from-[#f37446] to-[#d6431a] text-white font-extrabold text-lg shadow-[0_16px_44px_-12px_rgba(236,88,38,.65)] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+            {submitting ? 'Please wait...' : `${copy.pay} ₹${amount}`}
+          </button>
+        </form>
+
+        <div className="flex items-center justify-center gap-2 mt-5 text-[#cdded2] text-sm">
+          <ShieldCheck size={14} className="text-[#ecc472]" />
+          <span>{copy.secured}</span>
+        </div>
+      </div>
+    </main>
+  );
+}
