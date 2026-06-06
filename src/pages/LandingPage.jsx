@@ -11,11 +11,13 @@ import {
   ShieldCheck,
   Award,
   Sparkles,
+  Clock,
   Calendar,
   Lock,
   XCircle,
   ArrowRight,
   Target,
+  Compass,
   TrendingUp,
   GraduationCap,
   Hourglass,
@@ -115,6 +117,7 @@ const PAGE_COPY = {
 };
 
 const WORKSHOP_ICONS = [GraduationCap, Star, Target, TrendingUp];
+const REVEAL_ICONS = [Clock, MessageCircle, Compass, Sparkles];
 const MISTAKE_REFERENCE = [
   { title: 'सभी बच्चों को एक ही करियर की ओर धकेलना', desc: 'हर बच्चा अलग होता है। उसकी प्रतिभा, सोच और क्षमता भी अलग होती है।' },
   { title: 'बच्चे की प्राकृतिक प्रवृत्ति को न समझना', desc: 'जब बच्चे की जन्मजात क्षमता को पहचाना नहीं जाता, तो वह अपनी पूरी क्षमता तक नहीं पहुंच पाता।' },
@@ -266,7 +269,7 @@ export default function LandingPage() {
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-3 bg-[#052e16]/95 backdrop-blur-md border-b-2 border-[#fde047]/40 shadow-lg">
+      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-3 bg-[#007c16]/92 backdrop-blur-xl border-b border-[#fde047]/25 shadow-[0_10px_28px_rgba(0,0,0,0.22)]">
         <div className="flex items-center gap-3">
           {pageData.media?.logo ? (
             <img src={pageData.media.logo} alt="Logo" className="w-11 h-11 rounded-full object-cover border-2 border-[#fde047] shadow-md" />
@@ -275,7 +278,7 @@ export default function LandingPage() {
           )}
           <div className="leading-tight">
             <div className="font-heading font-black text-lg md:text-2xl tracking-tight text-white">
-              {siteSettings?.websiteName || 'Prakrit'} <span className="text-[#fde047]">Astro</span>
+              {siteSettings?.websiteName || 'Prakrit Astro'}
             </div>
             <div className="text-[10px] md:text-xs text-[#fde047]/90 font-semibold">ज्योतिष से सही दिशा, बच्चे का सुनहरा भविष्य</div>
           </div>
@@ -288,15 +291,6 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* Trust strip */}
-      <div className="bg-[#052e16] border-b-2 border-[#166534] px-4 md:px-12 py-2.5">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-3 md:gap-6 text-xs md:text-sm">
-          <span className="trust-chip"><ShieldCheck size={14} className="text-[#fde047]" /> Secure Payment</span>
-          <span className="trust-chip"><Award size={14} className="text-[#fde047]" /> No Fake Promises</span>
-          <span className="trust-chip"><Lock size={14} className="text-[#fde047]" /> Privacy Protected</span>
-        </div>
-      </div>
-
       {/* ===== HERO ===== */}
       <section className="relative px-4 md:px-12 py-10 md:py-16 constellation-bg overflow-visible">
         <div className="poster-composite max-w-7xl mx-auto">
@@ -306,7 +300,6 @@ export default function LandingPage() {
             <p className="poster-copy-lead">{copy.hero.subheadline}</p>
             <div className="poster-copy-meta">
               <span><Calendar size={18} /> {copy.hero.masterclassTag}</span>
-              <span><ShieldCheck size={18} /> Secure Payment</span>
             </div>
             {settings.paymentEnabled && (
               <div className="poster-action-bar">
@@ -420,16 +413,16 @@ export default function LandingPage() {
       {/* ===== Workshop Offerings ===== */}
       <section className="py-14 md:py-20 px-4 md:px-12 relative">
         <div className="absolute inset-0 constellation-bg opacity-70 pointer-events-none" />
-        <div className="poster-composite max-w-7xl mx-auto relative">
+        <div className="workshop-panel max-w-6xl mx-auto relative">
           <div className="poster-copy-panel">
             <div className="poster-copy-kicker">इस मास्टरक्लास में आपको</div>
             <h2 className="poster-copy-title">क्या सीखने को मिलेगा?</h2>
-            <ul className="poster-card-list poster-card-list-two">
+            <ul className="workshop-card-grid">
               {copy.workshop.items.map((item, i) => {
                 const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
                 return (
-                  <li key={item.title}>
-                    <span><Icon size={22} /></span>
+                  <li key={item.title} className="workshop-card">
+                    <span className="workshop-icon"><Icon size={24} /></span>
                     <div>
                       <strong>{item.title}</strong>
                       <p>{item.desc}</p>
@@ -438,9 +431,6 @@ export default function LandingPage() {
                 );
               })}
             </ul>
-          </div>
-          <div className="poster-image-frame poster-image-frame-workshop">
-            <img src={POSTER_IMAGES.workshop} alt="मास्टरक्लास में क्या सीखेंगे" className="section-visual" loading="lazy" />
           </div>
         </div>
       </section>
@@ -458,13 +448,15 @@ export default function LandingPage() {
             <p className="text-white text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
               {copy.reveal.desc}
             </p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-              {copy.reveal.bullets.map((bullet, i) => (
+            <ul className="reveal-grid">
+              {copy.reveal.bullets.map((bullet, i) => {
+                const Icon = REVEAL_ICONS[i % REVEAL_ICONS.length];
+                return (
                 <li key={i} className="reveal-bullet">
-                  <CheckCircle className="text-[#fde047] w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="reveal-icon"><Icon size={22} /></span>
                   <span>{bullet}</span>
                 </li>
-              ))}
+              );})}
             </ul>
           </div>
         </div>
@@ -668,7 +660,7 @@ export default function LandingPage() {
       )}
 
       {/* Footer */}
-      <footer className="py-10 px-4 md:px-12 bg-[#052e16] border-t-4 border-[#fde047]/50 text-center">
+      <footer className="py-10 px-4 md:px-12 bg-transparent text-center">
         <div className="flex justify-center flex-wrap gap-x-8 gap-y-3 mb-5 max-w-4xl mx-auto">
           {[
             ['Privacy Policy', '/privacy-policy'],
@@ -685,19 +677,19 @@ export default function LandingPage() {
       </footer>
 
       {/* Sticky mobile bottom bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[120] border-t-2 border-[#fde047]/60 bg-[#052e16]/98 backdrop-blur-xl shadow-[0_-10px_30px_rgba(0,0,0,0.55)]">
+      <div className="mobile-sticky-bar md:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-3 py-2.5">
           {settings.countdownEnabled && (
-            <div className="min-w-0 flex-1 rounded-xl border-2 border-[#fde047]/50 bg-[#064e3b] px-3 py-2">
-              <div className="text-[9px] font-black uppercase tracking-[0.18em] text-white">Time Left</div>
-              <div className="mt-0.5 flex items-center gap-1 text-lg font-black text-[#fde047]">
+            <div className="mobile-timer-pill">
+              <div className="mobile-timer-label">Time Left</div>
+              <div className="mobile-timer-value">
                 <span>{String(timeLeft.hours).padStart(2, '0')}</span><span className="text-white">:</span>
                 <span>{String(timeLeft.minutes).padStart(2, '0')}</span><span className="text-white">:</span>
                 <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
               </div>
             </div>
           )}
-          <button type="button" onClick={handleBookNow} className="btn-3d-gold min-w-[160px] rounded-xl px-4 py-3 text-center text-sm font-black">
+          <button type="button" onClick={handleBookNow} className="mobile-book-button">
             Book Now
             <span className="mt-0.5 block text-[11px] font-bold opacity-85">₹{pricing.offerPrice}/- only</span>
           </button>
