@@ -32,6 +32,18 @@ import {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const PAGE_CACHE_KEY = 'prakrit_landing_cache_v1';
 const ZODIAC_HERO_IMAGE = '/images/zodiac-hero.png';
+const POSTER_IMAGES = {
+  hero: '/images/Hero.png',
+  heroBoy: '/images/Hero (2).png',
+  zodiacSign: '/images/zodiac-sign-clean.png',
+  careerThoughts: '/images/rightcarrerthoughts-clean.png',
+  careerChoice: '/images/rightcarrerchoice.png',
+  workshop: '/images/whatwillleanr.png',
+  finalInvite: '/images/lastinfooter.png',
+  mistakeOne: '/images/3mistake-1.png',
+  mistakeTwo: '/images/3mistake-2.png',
+  mistakeThree: '/images/3mistake-3.png'
+};
 const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
 const readLandingCache = () => {
@@ -113,6 +125,20 @@ const PAGE_COPY = {
 };
 
 const WORKSHOP_ICONS = [GraduationCap, Star, Target, TrendingUp];
+const MISTAKE_REFERENCE = [
+  {
+    title: 'सभी बच्चों को एक ही करियर की ओर धकेलना',
+    desc: 'हर बच्चा अलग होता है। उसकी प्रतिभा, सोच और क्षमता भी अलग होती है।'
+  },
+  {
+    title: 'बच्चे की प्राकृतिक प्रवृत्ति को न समझना',
+    desc: 'जब बच्चे की जन्मजात क्षमता को पहचाना नहीं जाता, तो वह अपनी पूरी क्षमता तक नहीं पहुंच पाता।'
+  },
+  {
+    title: 'सही दिशा चुनने में देर करना',
+    desc: 'गलत दिशा में 3-5 साल जाने के बाद बदलाव करना कठिन हो जाता है।'
+  }
+];
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -269,7 +295,7 @@ export default function LandingPage() {
   const heroIllustration = pageData.media?.heroImage || ZODIAC_HERO_IMAGE;
 
   return (
-    <div className="relative overflow-x-hidden text-white font-sans antialiased pb-28 md:pb-0">
+    <div className="landing-poster-page relative overflow-x-hidden text-white font-sans antialiased pb-28 md:pb-0">
 
       {/* Announcement Bar */}
       {copy.announcementBar && (
@@ -320,8 +346,47 @@ export default function LandingPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative px-4 md:px-12 py-10 md:py-16 constellation-bg overflow-hidden">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <section className="relative px-4 md:px-12 py-10 md:py-16 constellation-bg overflow-visible">
+        <div className="poster-composite max-w-7xl mx-auto">
+          <div className="poster-copy-panel">
+            <div className="poster-copy-kicker">{copy.hero.question}</div>
+            <h1 className="poster-copy-title">{copy.hero.headline}</h1>
+            <p className="poster-copy-lead">{copy.hero.subheadline}</p>
+            <div className="poster-copy-meta">
+              <span><Calendar size={18} /> {copy.hero.masterclassTag}</span>
+              <span><ShieldCheck size={18} /> Secure Payment</span>
+            </div>
+            {settings.paymentEnabled && (
+              <div className="poster-action-bar">
+                <div className="poster-price-pill">
+                  <span>सीट बुक करें</span>
+                  <strong>₹{pricing.offerPrice}</strong>
+                </div>
+                <button onClick={handleBookNow} className="poster-red-button">
+                  Register Now <ArrowRight size={22} />
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="poster-image-frame poster-image-frame-hero" style={{ position: 'relative' }}>
+            <img
+              src={POSTER_IMAGES.zodiacSign}
+              alt=""
+              aria-hidden="true"
+              className="hero-zodiac-sign"
+            />
+            <img
+              src={POSTER_IMAGES.heroBoy}
+              alt="क्यों जरूरी है सही करियर दिशा"
+              className="section-visual hero-boy-cutout"
+              width={372}
+              height={628}
+              fetchPriority="high"
+            />
+          </div>
+        </div>
+
+        <div className="hidden max-w-7xl mx-auto grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
           {/* Left Hero Column */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
@@ -399,47 +464,63 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Countdown teaser strip */}
-        {settings.countdownEnabled && (
-          <div className="max-w-7xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="panel-dark rounded-2xl p-4 flex items-center gap-4">
-              <Hourglass className="text-[#fde047]" size={36} />
-              <div className="flex-1">
-                <div className="text-white text-xs font-bold uppercase tracking-wider mb-2">ऑफर समाप्त होने में शेष समय</div>
-                <div className="flex items-center gap-2">
-                  {[
-                    { val: timeLeft.hours, label: 'HOURS' },
-                    { val: timeLeft.minutes, label: 'MINUTES' },
-                    { val: timeLeft.seconds, label: 'SECONDS' }
-                  ].map((t, i, arr) => (
-                    <React.Fragment key={t.label}>
-                      <div className="text-center">
-                        <div className="time-card rounded-lg px-3 py-1.5 font-heading font-black text-xl md:text-2xl">{String(t.val).padStart(2, '0')}</div>
-                        <div className="text-[9px] font-black text-[#fde047] mt-1 tracking-wider">{t.label}</div>
-                      </div>
-                      {i < arr.length - 1 && <span className="text-[#fde047] font-black text-2xl">:</span>}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </div>
+      </section>
+
+      {/* Why sahi career disha — bulleted list */}
+      <section className="py-16 md:py-20 px-4 md:px-12">
+        <div className="poster-composite poster-composite-reverse max-w-7xl mx-auto">
+          <div className="poster-image-frame poster-image-frame-career">
+            <img
+              src={POSTER_IMAGES.careerThoughts}
+              alt="सही करियर दिशा के बारे में विचार"
+              className="career-thoughts-overlay"
+              width={1024}
+              height={1024}
+              loading="lazy"
+            />
+            <img
+              src={POSTER_IMAGES.careerChoice}
+              alt="सही करियर दिशा के बिना जोखिम"
+              className="section-visual"
+              width={1024}
+              height={1536}
+              loading="lazy"
+            />
+          </div>
+          <div className="poster-copy-panel">
+            <div className="poster-copy-kicker">क्यों जरूरी है सही करियर दिशा?</div>
+            <h2 className="poster-copy-title">क्या आप सही करियर दिशा के बिना अपने बच्चे के महत्वपूर्ण साल और पैसे जोखिम में डाल रहे हैं?</h2>
+            <ul className="poster-card-list">
+              {[
+                'बच्चा किस क्षेत्र में सबसे अच्छा करेगा?',
+                'कौन-सा करियर उसके स्वभाव और क्षमता के अनुसार है?',
+                'भविष्य में किस क्षेत्र में सफलता की संभावना अधिक है?'
+              ].map((question, i) => (
+                <li key={question}>
+                  <span>{i + 1}</span>
+                  <strong>{question}</strong>
+                </li>
+              ))}
+            </ul>
             {settings.paymentEnabled && (
-              <button onClick={handleBookNow} className="btn-poster rounded-2xl px-6 py-5 flex items-center justify-center gap-3 font-black text-base md:text-lg">
-                <span className="w-12 h-12 rounded-full bg-[#7f1d1d] flex items-center justify-center"><ArrowRight className="text-[#fde047]" size={24} /></span>
-                <div className="text-left leading-tight">
-                  <div>अभी बुक करें – केवल ₹{pricing.offerPrice}/- में</div>
-                  <div className="text-xs font-bold opacity-90">सीटें बहुत सीमित हैं!</div>
+              <div className="poster-action-bar">
+                <div className="poster-price-pill">
+                  <span>1 घंटे की लाइव मास्टरक्लास</span>
+                  <strong>₹{pricing.offerPrice}</strong>
                 </div>
-              </button>
+                <button onClick={handleBookNow} className="poster-red-button">
+                  Book Seat <ArrowRight size={22} />
+                </button>
+              </div>
             )}
           </div>
-        )}
+        </div>
       </section>
 
       {/* 3 PARENTS' MISTAKES — vertical numbered cards */}
       <section className="py-16 md:py-20 px-4 md:px-12 relative">
         <div className="absolute inset-0 constellation-bg opacity-80 pointer-events-none" />
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-6xl mx-auto relative">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-block bg-[#052e16] border-2 border-[#fde047] rounded-2xl px-6 py-3 mb-2 shadow-[0_8px_22px_rgba(0,0,0,0.4)]">
               <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
@@ -449,24 +530,18 @@ export default function LandingPage() {
             <p className="text-white font-semibold mt-3 text-sm md:text-base">{copy.problems.title}</p>
           </div>
 
-          {/* Vertical numbered list */}
-          <div className="flex flex-col gap-5 md:gap-6">
-            {copy.problems.items.slice(0, 3).map((prob, i) => (
-              <div key={i} className="mistake-card rounded-2xl p-5 md:p-7 transition-transform duration-300 hover:-translate-y-1">
-                <div className="flex items-start gap-5">
-                  <div className="num-circle w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center font-heading font-black text-2xl md:text-3xl flex-shrink-0">
-                    {i + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-heading font-black text-lg md:text-2xl text-poster-yellow leading-tight mb-2">
-                      {prob.title}
-                    </h4>
-                    <p className="text-white text-sm md:text-base leading-relaxed font-medium">
-                      {prob.desc}
-                    </p>
+          <div className="poster-grid poster-grid-three">
+            {[POSTER_IMAGES.mistakeOne, POSTER_IMAGES.mistakeTwo, POSTER_IMAGES.mistakeThree].map((src, i) => (
+              <article key={src} className="mini-poster-card">
+                <img src={src} alt={`माता-पिता की गलती ${i + 1}`} className="mini-poster-image" loading="lazy" />
+                <div className="mini-poster-copy">
+                  <div className="mini-poster-number">{i + 1}</div>
+                  <div>
+                    <h3>{MISTAKE_REFERENCE[i].title}</h3>
+                    <p>{MISTAKE_REFERENCE[i].desc}</p>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
 
@@ -478,59 +553,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Why sahi career disha — bulleted list */}
-      <section className="py-16 md:py-20 px-4 md:px-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
-              क्यों जरूरी है <span className="text-poster-yellow">सही करियर दिशा?</span>
-              <GraduationCap className="inline-block ml-3 text-[#14532d] bg-[#fde047] rounded-md p-1" size={48} />
-            </h2>
-            <p className="text-white font-semibold mt-4">आज के माता-पिता की सबसे बड़ी चुनौती है:</p>
-          </div>
-
-          <ul className="panel-dark rounded-2xl p-6 md:p-8 flex flex-col gap-4">
-            {[
-              'बच्चा किस क्षेत्र में सबसे अच्छा करेगा?',
-              'कौन-सा करियर उसके स्वभाव और क्षमता के अनुसार है?',
-              'भविष्य में किस क्षेत्र में सफलता की संभावना अधिक है?'
-            ].map((q, i) => (
-              <li key={i} className="flex items-start gap-4">
-                <span className="y-bullet" aria-hidden />
-                <span className="text-white font-bold text-base md:text-lg leading-snug">{q}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
       {/* Workshop Offerings — bulleted */}
       <section className="py-16 md:py-20 px-4 md:px-12 relative">
         <div className="absolute inset-0 constellation-bg opacity-70 pointer-events-none" />
-        <div className="max-w-5xl mx-auto relative">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
-              इस मास्टरक्लास में आपको<br /><span className="text-poster-yellow">क्या सीखने को मिलेगा?</span>
-            </h2>
-          </div>
-
-          <ul className="panel-dark rounded-2xl p-6 md:p-8 flex flex-col gap-5">
-            {copy.workshop.items.map((item, i) => {
-              const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
-              return (
-                <li key={i} className="flex items-start gap-4">
-                  <span className="y-bullet" aria-hidden />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <Icon className="text-[#fde047]" size={22} />
-                      <h4 className="font-heading font-black text-lg md:text-xl text-poster-yellow leading-tight">{item.title}</h4>
+        <div className="poster-composite max-w-7xl mx-auto relative">
+          <div className="poster-copy-panel">
+            <div className="poster-copy-kicker">इस मास्टरक्लास में आपको</div>
+            <h2 className="poster-copy-title">क्या सीखने को मिलेगा?</h2>
+            <ul className="poster-card-list poster-card-list-two">
+              {copy.workshop.items.map((item, i) => {
+                const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
+                return (
+                  <li key={item.title}>
+                    <span><Icon size={22} /></span>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.desc}</p>
                     </div>
-                    <p className="text-white text-sm md:text-base leading-relaxed font-medium">{item.desc}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="poster-image-frame poster-image-frame-workshop">
+            <img
+              src={POSTER_IMAGES.workshop}
+              alt="इस मास्टरक्लास में क्या सीखने को मिलेगा"
+              className="section-visual"
+              width={1024}
+              height={1536}
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
@@ -686,6 +740,39 @@ export default function LandingPage() {
         <section className="py-16 md:py-20 px-4 md:px-12 text-center relative overflow-hidden">
           <div className="absolute inset-0 constellation-bg pointer-events-none" />
           <div className="max-w-5xl mx-auto relative z-10">
+            <div className="poster-composite poster-composite-final mb-10">
+              <div className="poster-copy-panel">
+                <div className="poster-copy-kicker">अंतिम आमंत्रण</div>
+                <h2 className="poster-copy-title">{copy.footerCta.title}</h2>
+                <p className="poster-copy-lead">{copy.footerCta.price}</p>
+                <div className="poster-copy-meta">
+                  <span><ShieldCheck size={18} /> Secure Payment</span>
+                  <span><Lock size={18} /> Privacy Protected</span>
+                </div>
+                {settings.paymentEnabled && (
+                  <div className="poster-action-bar">
+                    <div className="poster-price-pill">
+                      <span>अभी रजिस्टर करें</span>
+                      <strong>₹{pricing.offerPrice}</strong>
+                    </div>
+                    <button onClick={handleBookNow} className="poster-red-button">
+                      Register Now <ArrowRight size={22} />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="poster-image-frame poster-image-frame-final">
+                <img
+                  src={POSTER_IMAGES.finalInvite}
+                  alt="अंतिम आमंत्रण - अभी रजिस्टर करें"
+                  className="section-visual"
+                  width={1024}
+                  height={1536}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
             <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
               <Hourglass className="text-[#fde047]" size={64} />
               <h3 className="font-heading font-black text-3xl sm:text-4xl md:text-6xl text-poster-yellow tracking-tight leading-tight">

@@ -5,12 +5,11 @@
   html { scroll-behavior: smooth; }
   body {
     /* Deep, rich emerald gradient with subtle constellation/geometric pattern */
-    background-color: #052e16;
+    background-color: #008f19;
     background-image:
-      radial-gradient(1200px 600px at 10% -10%, rgba(34,197,94,0.35), transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, rgba(20,83,45,0.7), transparent 60%),
-      radial-gradient(1000px 700px at 50% 110%, rgba(22,101,52,0.55), transparent 60%),
-      linear-gradient(180deg, #064e3b 0%, #052e16 50%, #064e3b 100%);
+      radial-gradient(1100px 620px at 8% -5%, rgba(253,224,71,0.14), transparent 58%),
+      radial-gradient(900px 520px at 108% 10%, rgba(0,190,35,0.42), transparent 62%),
+      linear-gradient(180deg, #02a51d 0%, #008616 48%, #02a51d 100%);
     background-attachment: fixed;
     color: #ffffff;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
@@ -196,6 +195,10 @@
   .pulse-cta { animation: pulseCta 1.8s ease-in-out infinite; }
   @keyframes spinSlow { to { transform: rotate(360deg); } }
   .animate-spin-slow { animation: spinSlow 28s linear infinite; }
+  @keyframes zodiacSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .animate-fade-in { animation: fadeIn 0.35s ease-out both; }
 
@@ -204,5 +207,693 @@
     background:
       radial-gradient(circle at 50% 50%, rgba(253,224,71,0.55) 0%, rgba(253,224,71,0.18) 35%, transparent 65%);
     filter: blur(8px);
+  }
+
+  .landing-poster-page > section {
+    background:
+      radial-gradient(circle at 14% 0%, rgba(253,224,71,0.12), transparent 30%),
+      radial-gradient(circle at 100% 18%, rgba(34,197,94,0.22), transparent 32%),
+      linear-gradient(145deg, #02a51d 0%, #008616 52%, #02a51d 100%);
+  }
+
+  .landing-poster-page {
+    background:
+      radial-gradient(circle at 14% 0%, rgba(253,224,71,0.12), transparent 30%),
+      radial-gradient(circle at 100% 18%, rgba(34,197,94,0.22), transparent 32%),
+      linear-gradient(145deg, #02a51d 0%, #008616 52%, #02a51d 100%);
+  }
+
+  .landing-poster-page .constellation-bg {
+    background:
+      radial-gradient(circle at 14% 0%, rgba(253,224,71,0.12), transparent 30%),
+      radial-gradient(circle at 100% 18%, rgba(34,197,94,0.22), transparent 32%),
+      linear-gradient(145deg, #02a51d 0%, #008616 52%, #02a51d 100%);
+  }
+
+  .poster-shell {
+    position: relative;
+    border-radius: 28px;
+    padding: clamp(10px, 1.4vw, 18px);
+    background:
+      linear-gradient(145deg, rgba(254, 240, 138, 0.95), rgba(202, 138, 4, 0.9)) border-box,
+      linear-gradient(180deg, #008f1d, #005313) padding-box;
+    border: 3px solid #facc15;
+    box-shadow:
+      0 26px 70px -28px rgba(0, 0, 0, 0.78),
+      0 0 0 1px rgba(254, 249, 195, 0.45) inset,
+      0 0 44px rgba(250, 204, 21, 0.18);
+    overflow: hidden;
+  }
+
+  .poster-shell::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    z-index: 0;
+    border-radius: 20px;
+    border: 1px solid rgba(254, 249, 195, 0.45);
+    pointer-events: none;
+  }
+
+  .poster-visual {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    background: #008f1d;
+    box-shadow: 0 16px 44px -22px rgba(0, 0, 0, 0.75);
+  }
+
+  .poster-composite {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
+    align-items: center;
+    gap: clamp(14px, 2.4vw, 34px);
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .poster-composite::before {
+    content: none;
+  }
+
+  .poster-composite-reverse {
+    grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.08fr);
+  }
+
+  .poster-composite-final {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.66fr);
+    align-items: center;
+    gap: clamp(18px, 3vw, 38px);
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+
+  .poster-composite .poster-copy-panel {
+    margin-top: 0;
+    align-self: center;
+    z-index: 5;
+  }
+
+  .poster-image-frame {
+    position: relative;
+    z-index: 1;
+    min-height: clamp(320px, 38vw, 500px);
+    max-height: 540px;
+    border-radius: 28px;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    isolation: isolate;
+  }
+
+  .poster-image-frame::after {
+    content: none;
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(0,104,22,0.55), transparent 34%),
+      radial-gradient(circle at 50% 18%, transparent 36%, rgba(0,80,18,0.28) 100%);
+    pointer-events: none;
+  }
+
+  .section-visual {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+    filter: saturate(1.06) contrast(1.02);
+  }
+
+  .poster-image-frame-hero .section-visual { object-position: 58% 49%; }
+  .poster-image-frame-hero {
+    min-height: 0;
+    max-height: none;
+    align-self: center;
+    overflow: visible;
+    min-height: clamp(430px, 52vw, 700px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .poster-image-frame-hero .section-visual {
+    height: auto;
+    min-height: 0;
+    max-height: min(620px, 76vh);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 0;
+    filter: saturate(1.08) contrast(1.04) drop-shadow(0 26px 30px rgba(0,0,0,0.3));
+  }
+
+  .hero-zodiac-sign {
+    position: absolute;
+    z-index: 0;
+    width: min(116%, 760px);
+    height: auto;
+    left: 50%;
+    top: 36%;
+    transform: translate(-50%, -50%);
+    opacity: 0.82;
+    pointer-events: none;
+    filter: saturate(1.22) contrast(1.08) drop-shadow(0 0 24px rgba(253,224,71,0.38));
+    animation: zodiacSpin 46s linear infinite;
+  }
+
+  .hero-boy-cutout {
+    position: relative;
+    z-index: 2;
+    width: min(98%, 540px) !important;
+    margin-inline: auto;
+  }
+  .poster-image-frame-career {
+    overflow: visible;
+  }
+
+  .poster-image-frame-career .section-visual {
+    position: relative;
+    z-index: 1;
+    object-position: 63% 48%;
+  }
+
+  .career-thoughts-overlay {
+    position: absolute;
+    z-index: 0;
+    width: min(72%, 430px);
+    height: auto;
+    left: 54%;
+    top: -16%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    opacity: 0.98;
+  }
+  .poster-image-frame-workshop,
+  .poster-image-frame-final {
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .poster-image-frame-career .section-visual,
+  .poster-image-frame-workshop .section-visual,
+  .poster-image-frame-final .section-visual {
+    height: auto;
+    min-height: 0;
+    max-height: min(620px, 68vh);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 22px;
+    filter: saturate(1.1) contrast(1.04) drop-shadow(0 24px 30px rgba(0,0,0,0.3));
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 0 62%, rgba(0,0,0,0.42) 82%, transparent 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, #000 0 62%, rgba(0,0,0,0.42) 82%, transparent 100%);
+  }
+
+  .poster-action-bar {
+    position: relative;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: clamp(10px, 1.6vw, 18px) auto 0;
+    padding: clamp(10px, 1.5vw, 16px);
+    border-radius: 20px;
+    background: linear-gradient(180deg, #ffea35 0%, #facc15 46%, #d97706 100%);
+    border: 3px solid #fef08a;
+    box-shadow: 0 9px 0 #854d0e, 0 20px 38px -18px rgba(0, 0, 0, 0.78);
+  }
+
+  .poster-price-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    border-radius: 16px;
+    padding: 9px 14px;
+    background: #064e3b;
+    border: 2px solid #fef08a;
+    color: #ffffff;
+    font-weight: 1000;
+    box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.35);
+  }
+
+  .poster-price-pill span {
+    font-size: clamp(0.8rem, 2.3vw, 1.15rem);
+    line-height: 1.05;
+  }
+
+  .poster-price-pill strong {
+    color: #fde047;
+    font-size: clamp(1.7rem, 6vw, 3.7rem);
+    line-height: 0.95;
+    text-shadow: 0 3px 0 #7f1d1d, 0 8px 18px rgba(0,0,0,0.42);
+    white-space: nowrap;
+  }
+
+  .poster-red-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 13px 20px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ef4444 0%, #dc2626 42%, #991b1b 100%);
+    color: #ffffff;
+    border: 3px solid #fef08a;
+    font-size: clamp(0.88rem, 2.5vw, 1.25rem);
+    font-weight: 1000;
+    text-transform: uppercase;
+    box-shadow: 0 7px 0 #7f1d1d, 0 16px 28px -16px rgba(0,0,0,0.88);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.32);
+    transition: transform 0.18s ease, filter 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .poster-copy-panel {
+    position: relative;
+    z-index: 2;
+    margin-top: clamp(12px, 1.8vw, 22px);
+    padding: clamp(10px, 1.6vw, 22px);
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    text-align: center;
+  }
+
+  .poster-copy-kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: #fef9c3;
+    color: #064e3b;
+    border: 2px solid #facc15;
+    font-weight: 1000;
+    font-size: clamp(0.86rem, 2.3vw, 1.35rem);
+    line-height: 1.15;
+    box-shadow: 0 5px 0 #ca8a04;
+  }
+
+  .poster-copy-title {
+    max-width: 900px;
+    margin: 0 auto;
+    color: #fde047;
+    font-family: 'Tiro Devanagari Hindi', Georgia, serif;
+    font-size: clamp(1.75rem, 5.8vw, 4.4rem);
+    font-weight: 1000;
+    line-height: 1.08;
+    text-shadow:
+      0 3px 0 rgba(0, 0, 0, 0.72),
+      0 7px 18px rgba(0, 0, 0, 0.56),
+      0 0 26px rgba(253, 224, 71, 0.28);
+  }
+
+  .poster-copy-lead {
+    max-width: 820px;
+    margin: 14px auto 0;
+    color: #ffffff;
+    font-size: clamp(1rem, 2.8vw, 1.45rem);
+    font-weight: 900;
+    line-height: 1.45;
+    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.75);
+  }
+
+  .poster-copy-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .poster-copy-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: #fef9c3;
+    color: #064e3b;
+    border: 2px solid #facc15;
+    font-size: clamp(0.78rem, 2.1vw, 0.98rem);
+    font-weight: 1000;
+  }
+
+  .poster-card-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .poster-card-list-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .poster-card-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 15px;
+    border-radius: 18px;
+    background: rgba(2, 44, 20, 0.9);
+    border: 2px solid rgba(253, 224, 71, 0.82);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .poster-card-list li > span {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #fde047;
+    color: #064e3b;
+    border: 3px solid #fef9c3;
+    font-weight: 1000;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 0 #854d0e;
+  }
+
+  .poster-card-list strong {
+    display: block;
+    color: #fde047;
+    font-family: 'Tiro Devanagari Hindi', Georgia, serif;
+    font-size: clamp(1.02rem, 2.6vw, 1.38rem);
+    font-weight: 1000;
+    line-height: 1.18;
+    text-shadow: 0 2px 7px rgba(0,0,0,0.68);
+  }
+
+  .poster-card-list p {
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: clamp(0.9rem, 2.2vw, 1.04rem);
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  .poster-red-button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+  }
+
+  .poster-red-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 3px 0 #7f1d1d, 0 8px 18px -12px rgba(0,0,0,0.8);
+  }
+
+  .poster-grid {
+    display: grid;
+    gap: clamp(16px, 2vw, 26px);
+  }
+
+  .poster-grid-three {
+    grid-template-columns: 1fr;
+    max-width: 1080px;
+    margin-inline: auto;
+  }
+
+  .mini-poster-card {
+    position: relative;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+    align-items: center;
+    gap: clamp(16px, 2.2vw, 28px);
+    border-radius: 26px;
+    padding: clamp(18px, 2.2vw, 26px);
+    background:
+      radial-gradient(circle at 100% 24%, rgba(253,224,71,0.18), transparent 32%),
+      linear-gradient(145deg, rgba(3,112,31,0.72) 0%, rgba(0,96,20,0.9) 52%, rgba(2,165,29,0.72) 100%);
+    border: 2px solid rgba(253,224,71,0.72);
+    box-shadow:
+      0 18px 40px -28px rgba(0,0,0,0.65),
+      inset 0 0 0 1px rgba(254,249,195,0.18);
+    overflow: visible;
+  }
+
+  .mini-poster-image {
+    position: relative;
+    order: 2;
+    width: 100%;
+    height: auto;
+    min-height: 280px;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.98;
+    border-radius: 20px;
+    background: transparent;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 0 68%, rgba(0,0,0,0.58) 86%, transparent 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, #000 0 68%, rgba(0,0,0,0.58) 86%, transparent 100%);
+    filter: saturate(1.1) contrast(1.04) drop-shadow(0 18px 22px rgba(0,0,0,0.24));
+  }
+
+  .mini-poster-copy {
+    position: relative;
+    z-index: 2;
+    order: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(14px, 2vw, 22px);
+    width: 100%;
+    align-self: center;
+    margin-top: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .mini-poster-number {
+    width: clamp(72px, 8vw, 104px);
+    height: clamp(72px, 8vw, 104px);
+    flex: 0 0 clamp(72px, 8vw, 104px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: transparent;
+    color: #fde047;
+    border: 3px solid #fde047;
+    font-weight: 1000;
+    font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+    line-height: 1;
+    box-shadow: inset 0 0 20px rgba(253,224,71,0.16), 0 0 16px rgba(253,224,71,0.16);
+    font-family: 'Tiro Devanagari Hindi', Georgia, serif;
+  }
+
+  .mini-poster-copy h3 {
+    color: #fde047;
+    font-size: clamp(1.55rem, 3vw, 2.25rem);
+    line-height: 1.16;
+    text-shadow: 0 3px 7px rgba(0,0,0,0.72);
+  }
+
+  .mini-poster-copy p {
+    margin-top: 18px;
+    color: #ffffff;
+    font-size: clamp(1.16rem, 1.65vw, 1.38rem);
+    line-height: 1.55;
+    font-weight: 900;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.72);
+    padding-top: 16px;
+    border-top: 1px solid rgba(253,224,71,0.38);
+  }
+
+  .mini-poster-extra {
+    color: #fef9c3 !important;
+    font-size: clamp(0.98rem, 1.25vw, 1.08rem) !important;
+    line-height: 1.35 !important;
+    opacity: 0.95;
+  }
+
+  .final-invite-visual {
+    margin: clamp(24px, 4vw, 44px) auto 0;
+    max-width: 760px;
+    position: relative;
+  }
+
+  .final-invite-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 24px;
+    filter: saturate(1.08) contrast(1.03) drop-shadow(0 28px 34px rgba(0,0,0,0.34));
+    mix-blend-mode: normal;
+  }
+
+  @media (max-width: 900px) {
+    .poster-composite,
+    .poster-composite-reverse,
+    .poster-composite-final {
+      grid-template-columns: 1fr;
+    }
+    .poster-image-frame-hero {
+      margin-top: 14px;
+      min-height: 560px;
+    }
+    .poster-composite-reverse .poster-image-frame {
+      order: 2;
+    }
+    .poster-image-frame {
+      min-height: min(76vw, 460px);
+    }
+    .poster-image-frame-career,
+    .poster-image-frame-workshop,
+    .poster-image-frame-final {
+      min-height: 0;
+    }
+    .poster-grid-three {
+      grid-template-columns: 1fr;
+      max-width: 760px;
+      margin-inline: auto;
+    }
+    .mini-poster-card {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .mini-poster-image {
+      order: 1;
+      min-height: 0;
+      aspect-ratio: 16 / 10;
+    }
+    .mini-poster-copy {
+      order: 2;
+    }
+    .career-thoughts-overlay {
+      width: min(82%, 460px);
+      left: 50%;
+      top: -10%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .poster-shell {
+      border-radius: 20px;
+      padding: 7px;
+      border-width: 2px;
+    }
+    .poster-composite {
+      padding: 0;
+      border-radius: 0;
+      gap: 12px;
+    }
+    .poster-composite::before {
+      content: none;
+    }
+    .poster-image-frame {
+      min-height: 300px;
+      border-radius: 18px;
+      border-width: 2px;
+    }
+    .poster-image-frame-career,
+    .poster-image-frame-workshop,
+    .poster-image-frame-final {
+      min-height: 0;
+    }
+    .poster-image-frame-hero .section-visual { object-position: 62% 48%; }
+    .poster-image-frame-hero {
+      margin-top: 18px;
+      min-height: 480px;
+    }
+    .poster-image-frame-hero .section-visual {
+      max-height: none;
+      width: min(82%, 360px) !important;
+      margin-inline: auto;
+    }
+    .hero-zodiac-sign {
+      width: min(124%, 580px);
+      top: 35%;
+    }
+    .career-thoughts-overlay {
+      width: min(102%, 430px);
+      z-index: 3;
+      top: -5%;
+      left: 50%;
+    }
+    .poster-image-frame-career .section-visual,
+    .poster-image-frame-workshop .section-visual,
+    .poster-image-frame-final .section-visual {
+      max-height: none;
+      object-fit: contain;
+      object-position: center;
+    }
+    .poster-shell::before {
+      inset: 5px;
+      border-radius: 15px;
+    }
+    .poster-visual {
+      border-radius: 15px;
+    }
+    .poster-action-bar {
+      flex-direction: column;
+      align-items: stretch;
+      border-radius: 16px;
+      box-shadow: 0 6px 0 #854d0e, 0 14px 26px -18px rgba(0, 0, 0, 0.8);
+    }
+    .poster-price-pill,
+    .poster-red-button {
+      width: 100%;
+    }
+    .poster-price-pill {
+      justify-content: space-between;
+    }
+    .poster-copy-panel {
+      border-radius: 0;
+      border-width: 0;
+      box-shadow: none;
+    }
+    .poster-card-list-two {
+      grid-template-columns: 1fr;
+    }
+    .poster-card-list li {
+      padding: 12px;
+      gap: 11px;
+    }
+    .poster-card-list li > span,
+    .mini-poster-number {
+      width: 56px;
+      height: 56px;
+      flex-basis: 56px;
+      font-size: 2.1rem;
+      border-width: 2px;
+    }
+    .mini-poster-card {
+      min-height: 0;
+      padding: 12px;
+    }
+    .mini-poster-image {
+      width: 100%;
+      opacity: 0.98;
+    }
+    .mini-poster-copy {
+      width: 100%;
+      backdrop-filter: blur(1px);
+    }
+    .mini-poster-copy h3 {
+      font-size: 1.45rem;
+    }
+    .mini-poster-copy p {
+      font-size: 1.02rem;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
   }
 }
