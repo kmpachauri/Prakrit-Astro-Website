@@ -5,16 +5,6 @@ import { CheckCircle, Loader2, MessageCircle, Home } from 'lucide-react';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
-function formatMeetingMode(mode = '') {
-  return {
-    whatsapp_call: 'WhatsApp Call',
-    google_meet: 'Google Meet',
-    zoom: 'Zoom',
-    phone_call: 'Phone Call',
-    whatsapp_group: 'WhatsApp Group Session'
-  }[mode] || 'Online Session';
-}
-
 export default function SuccessPage() {
   const [params] = useSearchParams();
   const orderId = params.get('orderId');
@@ -46,15 +36,15 @@ export default function SuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#06120a]">
+      <div className="app-green-page min-h-screen flex items-center justify-center">
         <Loader2 className="animate-spin text-[#ecc472]" size={42} />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-[#06120a] text-center px-5 py-12">
-      <div className="w-full max-w-2xl rounded-3xl border border-[#25d366]/25 bg-[#0e2216]/80 p-8 md:p-12 shadow-2xl">
+    <main className="app-green-page min-h-screen flex flex-col items-center justify-center text-center px-5 py-12">
+      <div className="app-green-panel w-full max-w-2xl rounded-3xl p-8 md:p-12">
         <CheckCircle className="mx-auto text-[#25d366] mb-5" size={64} />
         <h1 className="font-heading text-3xl md:text-4xl font-black text-white mb-3">Payment Successful</h1>
         <p className="text-[#cdded2] max-w-lg mx-auto mb-8">Your Prakrit Career Boost registration is confirmed. Please join the WhatsApp group to receive further instructions.</p>
@@ -63,8 +53,7 @@ export default function SuccessPage() {
           {[
             ['Order ID', orderId || 'N/A'],
             ['Amount', paymentData?.amount ? `₹${paymentData.amount}` : 'N/A'],
-            ['Status', paymentData?.status || 'success'],
-            ['Meeting Mode', formatMeetingMode(paymentData?.meetingMode || paymentData?.landingPageId?.settings?.meetingMode)]
+            ['Status', paymentData?.status || 'success']
           ].map(([label, value]) => (
             <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4">
               <div className="text-xs uppercase text-[#84a190] font-bold">{label}</div>
@@ -78,8 +67,8 @@ export default function SuccessPage() {
         </button>
 
         <div className="mt-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-[#ecc472] font-bold">
-            <Home size={16} /> Back to Home
+          <Link to="/" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#fde047]/60 bg-[#052e16]/80 text-[#fde047] font-black text-sm hover:bg-[#fde047] hover:text-[#14532d] transition-all duration-200">
+            <Home size={15} /> Back to Home
           </Link>
         </div>
       </div>

@@ -1,32 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  MessageCircle,
-  HelpCircle,
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
-  Star,
-  Loader2,
-  ShieldCheck,
-  Award,
-  Sparkles,
-  Clock,
-  Calendar,
-  Lock,
-  XCircle,
-  ArrowRight,
-  Target,
-  Compass,
-  TrendingUp,
-  GraduationCap,
-  Hourglass,
-  AlertTriangle
-} from 'lucide-react';
+import { MessageCircle, Circle as HelpCircle, CircleCheck as CheckCircle, ChevronDown, ChevronUp, Star, Loader as Loader2, ShieldCheck, Award, Sparkles, Clock, Calendar, Lock, Circle as XCircle, ArrowRight, Target, Compass, TrendingUp, GraduationCap, Hourglass, TriangleAlert as AlertTriangle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-const PAGE_CACHE_KEY = 'prakrit_landing_cache_v1';
-const ZODIAC_HERO_IMAGE = '/images/zodiac-hero.png';
 const POSTER_IMAGES = {
   hero: '/images/Hero.png',
   heroBoy: '/images/Hero (2).png',
@@ -42,18 +18,18 @@ const POSTER_IMAGES = {
 
 const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
-const readLandingCache = () => {
-  try { return JSON.parse(sessionStorage.getItem(PAGE_CACHE_KEY) || 'null'); } catch { return null; }
-};
-const writeLandingCache = (value) => {
-  try { sessionStorage.setItem(PAGE_CACHE_KEY, JSON.stringify(value)); } catch { /* noop */ }
-};
 const injectOfferPrice = (text = '', offerPrice) => {
   if (!text || !offerPrice) return text;
   return text.replace(/₹\s*\d+\/?-?/g, `₹${offerPrice}/-`);
 };
 
 const PAGE_COPY = {
+  general: {
+    brandName: 'Prakrit Astro',
+    headerTagline: 'ज्योतिष से सही दिशा, बच्चे का सुनहरा भविष्य',
+    supportLabel: 'सपोर्ट',
+    whatsappMessage: 'Hello, I have a query about Prakrit Astro.'
+  },
   announcementBar: '🔥 सीमित सीटें उपलब्ध | केवल इस बैच के लिए ₹77/- विशेष ऑफर',
   hero: {
     question: 'क्या आपका बच्चा 8वीं, 9वीं या 10वीं क्लास में है?',
@@ -95,14 +71,36 @@ const PAGE_COPY = {
   mentor: {
     title: 'आपके मार्गदर्शक',
     role: 'Director - Tattoobaba Art Factory Pvt. Ltd. & Founder - Prakrit Career Jyotish',
-    quote: 'एक बिजनेस लीडर और करियर कंसल्टेंट के रूप में, मैंने देखा है कि कैसे आज के युवा गलत करियर चुनकर जिंदगी के सबसे कीमती साल गंवा देते हैं। मेरा मिशन प्राकृत ज्योतिष के प्राचीन विज्ञान को आधुनिक करियर काउंसलिंग से जोड़कर, बच्चों को उनके जीवन की सही "प्राकृत" दिशा दिखाना है।'
+    quote: 'एक बिजनेस लीडर और करियर कंसल्टेंट के रूप में, मैंने देखा है कि कैसे आज के युवा गलत करियर चुनकर जिंदगी के सबसे कीमती साल गंवा देते हैं। मेरा मिशन प्राकृत ज्योतिष के प्राचीन विज्ञान को आधुनिक करियर काउंसलिंग से जोड़कर, बच्चों को उनके जीवन की सही "प्राकृत" दिशा दिखाना है।',
+    brandLine: 'ASTRO & GEMS 369',
+    bullets: [
+      '36+ वर्षों का प्राकृत ज्योतिष अनुभव',
+      'हजारों बच्चों और परिवारों को सही दिशा देने का अनुभव',
+      'टैरो, ज्योतिष, अंक ज्योतिष एवं रत्न विज्ञान में विशेषज्ञता'
+    ]
   },
-  faqs: [
-    { question: 'क्या इसके लिए बच्चे की सटीक जन्म तिथि और समय होना जरूरी है?', answer: 'हाँ, सटीक कुंडली विश्लेषण के लिए बच्चे की जन्म तिथि, समय और जन्म स्थान की सटीक आवश्यकता होगी।' },
-    { question: '₹77/- इतनी कम फीस क्यों है?', answer: 'यह फीस केवल गंभीर और अपने बच्चे के भविष्य के प्रति सजग माता-पिता को फिल्टर करने के लिए रखी गई है ताकि लाइव क्लास में केवल सिंसियर लोग आएं।' },
-    { question: 'यह वर्कशॉप कहाँ और कैसे होगी?', answer: 'यह पूरी तरह से ऑनलाइन लाइव ज़ूम मीटिंग पर होगी। रजिस्ट्रेशन के तुरंत बाद आपको WhatsApp और ईमेल पर सीक्रेट लिंक मिल जाएगा।' }
-  ],
+  careerDirection: {
+    kicker: 'क्यों जरूरी है सही करियर दिशा?',
+    headline: 'क्या आप सही करियर दिशा के बिना अपने बच्चे के साल और पैसे जोखिम में डाल रहे हैं?',
+    questions: [
+      'बच्चा किस क्षेत्र में सबसे अच्छा करेगा?',
+      'कौन-सा करियर उसके स्वभाव और क्षमता के अनुसार है?',
+      'भविष्य में किस क्षेत्र में सफलता की संभावना अधिक है?'
+    ],
+    priceLabel: '1 घंटे की लाइव मास्टरक्लास'
+  },
+  testimonial: {
+    titlePrefix: 'संतुष्ट माता-पिता के',
+    titleHighlight: 'अनुभव'
+  },
+  faqSection: {
+    titlePrefix: 'अक्सर पूछे जाने वाले',
+    titleHighlight: 'सवाल (FAQ)'
+  },
+  faqs: [],
   footerCta: {
+    headline: 'अंतिम आमंत्रण',
+    countdownLabel: 'ऑफर समाप्त होने में शेष समय',
     title: 'समय तेजी से निकल रहा है, और आपके बच्चे का भविष्य दांव पर है!',
     subtitle: 'आज ही अपनी सीट सुरक्षित करें',
     seats: '⚠️ सीटें बेहद सीमित हैं (केवल 100 पैरेंट्स प्रति बैच)',
@@ -112,26 +110,91 @@ const PAGE_COPY = {
       'लाइव ऑनलाइन मास्टरक्लास',
       'बच्चे की सही करियर दिशा जानें',
       'सुरक्षित भविष्य की ओर कदम बढ़ाएं'
-    ]
+    ],
+    trustBadges: ['Secure Payment', 'No Fake Promises', 'Privacy Protected']
+  },
+  footer: {
+    links: [
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms & Conditions', href: '/terms' },
+      { label: 'Refund Policy', href: '/refund-policy' },
+      { label: 'Contact Support', href: '/contact' }
+    ],
+    copyrightName: 'Prakrit Astro'
   }
 };
 
 const WORKSHOP_ICONS = [GraduationCap, Star, Target, TrendingUp];
 const REVEAL_ICONS = [Clock, MessageCircle, Compass, Sparkles];
+const FINAL_BULLET_ICONS = [Calendar, Compass, ShieldCheck];
 const MISTAKE_REFERENCE = [
   { title: 'सभी बच्चों को एक ही करियर की ओर धकेलना', desc: 'हर बच्चा अलग होता है। उसकी प्रतिभा, सोच और क्षमता भी अलग होती है।' },
   { title: 'बच्चे की प्राकृतिक प्रवृत्ति को न समझना', desc: 'जब बच्चे की जन्मजात क्षमता को पहचाना नहीं जाता, तो वह अपनी पूरी क्षमता तक नहीं पहुंच पाता।' },
   { title: 'सही दिशा चुनने में देर करना', desc: 'गलत दिशा में 3-5 साल जाने के बाद बदलाव करना कठिन हो जाता है।' }
 ];
 
+const SAMPLE_TESTIMONIAL = {
+  name: 'रीना शर्मा',
+  location: 'जयपुर',
+  rating: 5,
+  message: 'इस मास्टरक्लास के बाद हमें पहली बार समझ आया कि बच्चे की रुचि और जन्मजात क्षमता के हिसाब से करियर दिशा चुनना कितना जरूरी है।'
+};
+
+const PriceDisplay = ({ offerPrice, originalPrice = 1999 }) => (
+  <div className="price-anchor-display">
+    <s className="original-price">₹{originalPrice}</s>
+    <strong className="final-price">₹{offerPrice}</strong>
+  </div>
+);
+
+const renderHeroHeadline = (headline = '') => {
+  const parts = headline.split(/(5 साल|लाखों रुपये)/g);
+  return parts.map((part, index) => (
+    part === '5 साल' || part === 'लाखों रुपये'
+      ? <span key={`${part}-${index}`} className="highlight-price">{part}</span>
+      : part
+  ));
+};
+
+const renderCareerHeadline = (headline = '') => {
+  const parts = headline.split(/(सही करियर दिशा|साल|पैसे)/g);
+  return parts.map((part, index) => (
+    part === 'सही करियर दिशा' || part === 'साल' || part === 'पैसे'
+      ? <span key={`${part}-${index}`} className="highlight-price">{part}</span>
+      : part
+  ));
+};
+
+const renderBrandName = (name = 'Prakrit Astro') => {
+  const parts = name.split(/(Astro)/i);
+  return parts.map((part, index) => (
+    part.toLowerCase() === 'astro'
+      ? <span key={`${part}-${index}`} className="brand-astro">{part}</span>
+      : part
+  ));
+};
+
+const pickPageContent = (content = {}) => {
+  const candidates = [content.hinglish, content.hindi, content.english];
+  return candidates.find(section => section && Object.keys(section).length) || {};
+};
+
+const getUniqueFaqs = (items = []) => {
+  const seen = new Set();
+  return items.filter(item => {
+    const key = `${item.question || ''}::${item.answer || ''}`.trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
 export default function LandingPage() {
   const navigate = useNavigate();
-  const cached = readLandingCache();
-  const [pageData, setPageData] = useState(cached?.pageData || null);
-  const [siteSettings, setSiteSettings] = useState(cached?.siteSettings || null);
-  const [testimonials, setTestimonials] = useState(cached?.testimonials || []);
-  const [faqs, setFaqs] = useState(cached?.faqs || []);
-  const [loading, setLoading] = useState(!cached?.pageData);
+  const [pageData, setPageData] = useState(null);
+  const [testimonials, setTestimonials] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openFaqId, setOpenFaqId] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 30, seconds: 0 });
@@ -140,20 +203,16 @@ export default function LandingPage() {
     const fetchData = async () => {
       try {
         if (!pageData) setLoading(true);
-        const [pageRes, settingsRes, testimonialsRes, faqsRes] = await Promise.all([
+        const [pageRes, testimonialsRes, faqsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/public/active-landing-page`),
-          fetch(`${API_BASE_URL}/api/public/site-settings`),
           fetch(`${API_BASE_URL}/api/public/testimonials`),
           fetch(`${API_BASE_URL}/api/public/faqs`)
         ]);
         if (!pageRes.ok) throw new Error('Active landing page not found.');
         const pageDataJson = await pageRes.json();
-        const nextCache = { pageData: pageDataJson, siteSettings, testimonials, faqs };
         setPageData(pageDataJson);
-        if (settingsRes.ok) { nextCache.siteSettings = await settingsRes.json(); setSiteSettings(nextCache.siteSettings); }
-        if (testimonialsRes.ok) { nextCache.testimonials = await testimonialsRes.json(); setTestimonials(nextCache.testimonials); }
-        if (faqsRes.ok) { nextCache.faqs = await faqsRes.json(); setFaqs(nextCache.faqs); }
-        writeLandingCache(nextCache);
+        if (testimonialsRes.ok) setTestimonials(await testimonialsRes.json());
+        if (faqsRes.ok) setFaqs(await faqsRes.json());
         setError(null);
       } catch {
         setError('Failed to load page. Please try again later.');
@@ -162,15 +221,16 @@ export default function LandingPage() {
       }
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!pageData?.settings?.countdownEnabled) return;
     const totalSeconds = (pageData.settings.countdownHours || 2) * 3600 + (pageData.settings.countdownMinutes || 0) * 60;
-    const timerKey = `prakrit_countdown_end_${pageData._id}_${totalSeconds}`;
-    let endAt = Number(localStorage.getItem(timerKey));
-    if (!endAt) { endAt = Date.now() + totalSeconds * 1000; localStorage.setItem(timerKey, String(endAt)); }
+    const storageKey = `prakrit-countdown-end-${pageData._id || pageData.slug || 'active'}`;
+    const storedEndAt = Number(sessionStorage.getItem(storageKey));
+    const endAt = storedEndAt > Date.now() ? storedEndAt : Date.now() + totalSeconds * 1000;
+    sessionStorage.setItem(storageKey, String(endAt));
+
     const updateTimer = () => {
       const s = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
       setTimeLeft({ hours: Math.floor(s / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 });
@@ -179,15 +239,6 @@ export default function LandingPage() {
     updateTimer();
     const timer = setInterval(() => { if (updateTimer() <= 0) clearInterval(timer); }, 1000);
     return () => clearInterval(timer);
-  }, [pageData]);
-
-  useEffect(() => {
-    if (pageData?.seo) {
-      document.title = pageData.seo.title || 'Prakrit Astro';
-      let m = document.querySelector('meta[name="description"]');
-      if (!m) { m = document.createElement('meta'); m.name = 'description'; document.head.appendChild(m); }
-      m.content = pageData.seo.description || 'Prakrit Astro';
-    }
   }, [pageData]);
 
   const toggleFaq = (id) => setOpenFaqId(openFaqId === id ? null : id);
@@ -220,13 +271,21 @@ export default function LandingPage() {
 
   const pricing = pageData.pricing || { originalPrice: 1999, offerPrice: 77 };
   const settings = pageData.settings || {};
-  const content = pageData.content?.hinglish || {};
+  const content = pickPageContent(pageData.content);
+  const adminProblemItems = content.problemSection?.problems?.length ? content.problemSection.problems : null;
+  const displayMistakes = adminProblemItems || MISTAKE_REFERENCE;
   const copy = {
+    general: { ...PAGE_COPY.general, ...(content.generalSection || {}) },
     announcementBar: injectOfferPrice(content.announcementBar || PAGE_COPY.announcementBar, pricing.offerPrice),
     hero: { ...PAGE_COPY.hero, ...(content.hero || {}) },
+    careerDirection: {
+      ...PAGE_COPY.careerDirection,
+      ...(content.careerDirectionSection || {}),
+      questions: content.careerDirectionSection?.questions?.length ? content.careerDirectionSection.questions : PAGE_COPY.careerDirection.questions
+    },
     problems: {
       title: content.problemSection?.title || PAGE_COPY.problems.title,
-      items: content.problemSection?.problems?.length ? content.problemSection.problems : PAGE_COPY.problems.items,
+      items: adminProblemItems || MISTAKE_REFERENCE,
       conclusion: content.problemSection?.solutionSubtitle || PAGE_COPY.problems.conclusion
     },
     workshop: {
@@ -239,21 +298,34 @@ export default function LandingPage() {
       desc: content.revealSection?.desc || PAGE_COPY.reveal.desc,
       bullets: content.revealSection?.bullets?.length ? content.revealSection.bullets : PAGE_COPY.reveal.bullets
     },
-    mentor: { ...PAGE_COPY.mentor, ...(content.mentorSection || {}) },
-    faqs: faqs.length ? faqs.filter(f => f.language === 'hinglish' || !f.language).map(f => ({ question: f.question, answer: f.answer })) : PAGE_COPY.faqs,
+    mentor: {
+      ...PAGE_COPY.mentor,
+      ...(content.mentorSection || {}),
+      bullets: content.mentorSection?.bullets?.length ? content.mentorSection.bullets : PAGE_COPY.mentor.bullets
+    },
+    testimonial: { ...PAGE_COPY.testimonial, ...(content.testimonialSection || {}) },
+    faqSection: { ...PAGE_COPY.faqSection, ...(content.faqSection || {}) },
+    faqs: getUniqueFaqs(faqs).map(f => ({ question: f.question, answer: f.answer })),
     footerCta: {
       title: content.footerSection?.urgencyTitle || PAGE_COPY.footerCta.title,
       subtitle: content.footerSection?.urgencySubtitle || PAGE_COPY.footerCta.subtitle,
       seats: content.footerSection?.urgencyDesc || PAGE_COPY.footerCta.seats,
       price: injectOfferPrice(content.footerSection?.urgencyPrice || PAGE_COPY.footerCta.price, pricing.offerPrice),
       cta: content.footerSection?.ctaText || PAGE_COPY.footerCta.cta,
-      bullets: PAGE_COPY.footerCta.bullets,
+      bullets: content.footerSection?.bullets?.length ? content.footerSection.bullets : PAGE_COPY.footerCta.bullets,
+      headline: content.footerSection?.headline || PAGE_COPY.footerCta.headline,
+      countdownLabel: content.footerSection?.countdownLabel || PAGE_COPY.footerCta.countdownLabel,
+      trustBadges: content.footerSection?.trustBadges?.length ? content.footerSection.trustBadges : PAGE_COPY.footerCta.trustBadges,
       secureText: content.footerSection?.secureText || '100% सुरक्षित गेटवे: Razorpay, UPI, Credit/Debit Cards'
+    },
+    footer: {
+      ...PAGE_COPY.footer,
+      ...(content.siteFooterSection || {}),
+      links: content.siteFooterSection?.links?.length ? content.siteFooterSection.links : PAGE_COPY.footer.links
     }
   };
   const mentorName = copy.mentor.name || 'Pandit Ramendra & Rekha Tattoobaba';
-  const filteredTestimonials = testimonials.filter(t => t.language === 'hinglish' || !t.language);
-  const heroIllustration = pageData.media?.heroImage || ZODIAC_HERO_IMAGE;
+  const filteredTestimonials = testimonials.length ? testimonials : [SAMPLE_TESTIMONIAL];
 
   return (
     <div className="landing-poster-page relative overflow-x-hidden text-white font-sans antialiased pb-28 md:pb-0">
@@ -269,46 +341,44 @@ export default function LandingPage() {
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-3 bg-[#007c16]/92 backdrop-blur-xl border-b border-[#fde047]/25 shadow-[0_10px_28px_rgba(0,0,0,0.22)]">
+      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-3 bg-[#003f0d] backdrop-blur-xl border-b border-[#fde047]/25 shadow-[0_10px_28px_rgba(0,0,0,0.28)]">
         <div className="flex items-center gap-3">
-          {pageData.media?.logo ? (
-            <img src={pageData.media.logo} alt="Logo" className="w-11 h-11 rounded-full object-cover border-2 border-[#fde047] shadow-md" />
-          ) : (
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#fde047] to-[#ca8a04] flex items-center justify-center font-black text-[#14532d] shadow-md border-2 border-[#fde047]">P</div>
-          )}
+          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#fde047] to-[#ca8a04] flex items-center justify-center font-black text-[#14532d] shadow-md border-2 border-[#fde047]">P</div>
           <div className="leading-tight">
             <div className="font-heading font-black text-lg md:text-2xl tracking-tight text-white">
-              {siteSettings?.websiteName || 'Prakrit Astro'}
+              {renderBrandName(copy.general.brandName)}
             </div>
-            <div className="text-[10px] md:text-xs text-[#fde047]/90 font-semibold">ज्योतिष से सही दिशा, बच्चे का सुनहरा भविष्य</div>
+            <div className="text-[10px] md:text-xs text-white/90 font-semibold">
+              {copy.general.headerTagline}
+            </div>
           </div>
         </div>
         {settings.whatsappNumber && (
-          <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Astro.`} target="_blank" rel="noreferrer"
+          <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=${encodeURIComponent(copy.general.whatsappMessage)}`} target="_blank" rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#22c55e] to-[#15803d] border-2 border-[#fde047] text-white text-xs md:text-sm font-black shadow-md hover:brightness-110 hover:-translate-y-0.5 transition-all duration-300">
-            <MessageCircle size={16} /><span>सपोर्ट</span>
+            <MessageCircle size={16} /><span>{copy.general.supportLabel}</span>
           </a>
         )}
       </header>
 
       {/* ===== HERO ===== */}
-      <section className="relative px-4 md:px-12 py-10 md:py-16 constellation-bg overflow-visible">
+      <section className="scroll-pin-section relative px-4 md:px-12 py-10 md:py-20 constellation-bg overflow-visible">
         <div className="poster-composite max-w-7xl mx-auto">
           <div className="poster-copy-panel">
             <div className="poster-copy-kicker">{copy.hero.question}</div>
-            <h1 className="poster-copy-title">{copy.hero.headline}</h1>
+            <h1 className="poster-copy-title">{renderHeroHeadline(copy.hero.headline)}</h1>
             <p className="poster-copy-lead">{copy.hero.subheadline}</p>
             <div className="poster-copy-meta">
               <span><Calendar size={18} /> {copy.hero.masterclassTag}</span>
             </div>
             {settings.paymentEnabled && (
-              <div className="poster-action-bar">
+              <div className="poster-action-bar animate-entrance-hero">
                 <div className="poster-price-pill">
                   <span>सीट बुक करें</span>
-                  <strong>₹{pricing.offerPrice}</strong>
+                  <PriceDisplay offerPrice={pricing.offerPrice} originalPrice={pricing.originalPrice} />
                 </div>
                 <button onClick={handleBookNow} className="poster-red-button">
-                  Register Now <ArrowRight size={22} />
+                  {copy.hero.ctaText} <ArrowRight size={22} />
                 </button>
               </div>
             )}
@@ -331,26 +401,24 @@ export default function LandingPage() {
       </section>
 
       {/* ===== Why sahi career disha ===== */}
-      <section className="py-14 md:py-20 px-4 md:px-12">
+      <section className="scroll-pin-section career-direction-section py-14 md:py-20 px-4 md:px-12">
         <div className="poster-composite poster-composite-reverse max-w-7xl mx-auto">
           <div className="poster-image-frame poster-image-frame-career">
-            <img src={POSTER_IMAGES.careerThoughts} alt="" aria-hidden="true" className="career-thoughts-overlay" loading="lazy" />
-            <img
-              src={POSTER_IMAGES.careerChoice}
-              alt="सही करियर दिशा"
-              className="section-visual"
-              loading="lazy"
-            />
+            <div className="career-composite-stage">
+              <img src={POSTER_IMAGES.careerThoughts} alt="" aria-hidden="true" className="career-thoughts-overlay" loading="lazy" />
+              <img
+                src={POSTER_IMAGES.careerChoice}
+                alt="सही करियर दिशा"
+                className="career-parent-image"
+                loading="lazy"
+              />
+            </div>
           </div>
           <div className="poster-copy-panel">
-            <div className="poster-copy-kicker">क्यों जरूरी है सही करियर दिशा?</div>
-            <h2 className="poster-copy-title">क्या आप सही करियर दिशा के बिना अपने बच्चे के साल और पैसे जोखिम में डाल रहे हैं?</h2>
+            <div className="poster-copy-kicker">{copy.careerDirection.kicker}</div>
+            <h2 className="poster-copy-title">{renderCareerHeadline(copy.careerDirection.headline)}</h2>
             <ul className="poster-card-list">
-              {[
-                'बच्चा किस क्षेत्र में सबसे अच्छा करेगा?',
-                'कौन-सा करियर उसके स्वभाव और क्षमता के अनुसार है?',
-                'भविष्य में किस क्षेत्र में सफलता की संभावना अधिक है?'
-              ].map((q, i) => (
+              {copy.careerDirection.questions.map((q, i) => (
                 <li key={q}>
                   <span>{i + 1}</span>
                   <strong>{q}</strong>
@@ -358,13 +426,13 @@ export default function LandingPage() {
               ))}
             </ul>
             {settings.paymentEnabled && (
-              <div className="poster-action-bar">
+              <div className="poster-action-bar animate-entrance">
                 <div className="poster-price-pill">
-                  <span>1 घंटे की लाइव मास्टरक्लास</span>
-                  <strong>₹{pricing.offerPrice}</strong>
+                  <span>{copy.careerDirection.priceLabel}</span>
+                  <PriceDisplay offerPrice={pricing.offerPrice} originalPrice={pricing.originalPrice} />
                 </div>
                 <button onClick={handleBookNow} className="poster-red-button">
-                  Book Seat <ArrowRight size={22} />
+                  {copy.hero.ctaText} <ArrowRight size={22} />
                 </button>
               </div>
             )}
@@ -377,12 +445,9 @@ export default function LandingPage() {
         <div className="absolute inset-0 constellation-bg opacity-80 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="title-plaque">
-              <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
-                माता-पिता की <span className="text-poster-yellow">3 बड़ी गलतियाँ</span>
-              </h2>
-            </div>
-            <p className="text-white font-semibold mt-4 text-sm md:text-base opacity-90">{copy.problems.title}</p>
+            <h2 className="mistake-section-title">
+              आज के <span className="text-[#fde047]">माता-पिता</span> की सबसे बड़ी <span className="text-[#fde047]">3 गंभीर गलतियाँ</span>
+            </h2>
           </div>
 
           <div className="poster-grid poster-grid-three">
@@ -391,8 +456,8 @@ export default function LandingPage() {
                 <div className="mini-poster-copy">
                   <div className="mini-poster-number">{i + 1}</div>
                   <div>
-                    <h3>{MISTAKE_REFERENCE[i].title}</h3>
-                    <p>{MISTAKE_REFERENCE[i].desc}</p>
+                    <h3>{displayMistakes[i]?.title || MISTAKE_REFERENCE[i].title}</h3>
+                    <p>{displayMistakes[i]?.desc || MISTAKE_REFERENCE[i].desc}</p>
                   </div>
                 </div>
                 <div className="mini-poster-image-wrap">
@@ -403,9 +468,7 @@ export default function LandingPage() {
           </div>
 
           <div className="conclusion-plaque mt-12">
-            <p className="font-heading font-black text-[#14532d] text-base md:text-xl">
-              {copy.problems.conclusion}
-            </p>
+            <p>{copy.problems.conclusion}</p>
           </div>
         </div>
       </section>
@@ -416,12 +479,12 @@ export default function LandingPage() {
         <div className="workshop-panel max-w-6xl mx-auto relative">
           <div className="poster-copy-panel">
             <div className="poster-copy-kicker">इस मास्टरक्लास में आपको</div>
-            <h2 className="poster-copy-title">क्या सीखने को मिलेगा?</h2>
+            <h2 className="poster-copy-title">{copy.workshop.title}</h2>
             <ul className="workshop-card-grid">
               {copy.workshop.items.map((item, i) => {
                 const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
                 return (
-                  <li key={item.title} className="workshop-card">
+                  <li key={item.title} className="workshop-card animate-workshop-entrance" style={{ animationDelay: `${i * 0.1}s` }}>
                     <span className="workshop-icon"><Icon size={24} /></span>
                     <div>
                       <strong>{item.title}</strong>
@@ -442,7 +505,7 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#22c55e]/20 rounded-full blur-[80px] pointer-events-none" />
           <div className="relative z-10">
             <span className="bonus-badge">⭐ {copy.reveal.badge}</span>
-            <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-poster-yellow tracking-tight mb-4 mt-5">
+            <h3 className="font-heading font-black text-3xl sm:text-4xl md:text-5xl text-poster-yellow tracking-tight mb-4 mt-5">
               {copy.reveal.title}
             </h3>
             <p className="text-white text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
@@ -452,7 +515,7 @@ export default function LandingPage() {
               {copy.reveal.bullets.map((bullet, i) => {
                 const Icon = REVEAL_ICONS[i % REVEAL_ICONS.length];
                 return (
-                <li key={i} className="reveal-bullet">
+                <li key={i} className="reveal-bullet animate-reveal-entrance" style={{ animationDelay: `${i * 0.12}s` }}>
                   <span className="reveal-icon"><Icon size={22} /></span>
                   <span>{bullet}</span>
                 </li>
@@ -467,16 +530,16 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <div className="title-plaque title-plaque-light">
-              <h2 className="font-heading font-black text-2xl md:text-4xl text-[#14532d] tracking-tight">
+              <h2 className="font-heading font-black text-3xl md:text-5xl text-[#14532d] tracking-tight">
                 {copy.mentor.title}
               </h2>
             </div>
           </div>
 
-          <div className="flex flex-col items-center text-center">
+          <div className="mentor-card flex flex-col items-center text-center">
             <div className="mentor-ring-3d mb-6">
               <img
-                src={pageData.media?.guruImage || '/images/profile_logo.jpeg'}
+                src="/images/profile_logo.jpeg"
                 alt={mentorName}
                 className="w-full h-full object-cover"
                 onError={e => { e.target.src = '/images/profile_logo.jpeg'; }}
@@ -485,15 +548,11 @@ export default function LandingPage() {
 
             <div className="mentor-name-plaque mb-6">
               <h3 className="font-heading font-black text-xl md:text-3xl text-white mb-1">{mentorName}</h3>
-              <div className="text-2xl md:text-4xl font-black text-poster-yellow tracking-wide">ASTRO &amp; GEMS <span className="text-[#fde047]">369</span></div>
+              <div className="text-2xl md:text-4xl font-black text-poster-yellow tracking-wide">{copy.mentor.brandLine}</div>
             </div>
 
             <ul className="w-full max-w-2xl flex flex-col gap-3">
-              {[
-                '36+ वर्षों का प्राकृत ज्योतिष अनुभव',
-                'हजारों बच्चों और परिवारों को सही दिशा देने का अनुभव',
-                'टैरो, ज्योतिष, अंक ज्योतिष एवं रत्न विज्ञान में विशेषज्ञता'
-              ].map((b, i) => (
+              {copy.mentor.bullets.map((b, i) => (
                 <li key={i} className="mentor-bullet">
                   <span><CheckCircle className="text-[#14532d]" size={20} /></span>
                   <span className="text-white font-bold text-sm md:text-base text-left">{b}</span>
@@ -514,8 +573,8 @@ export default function LandingPage() {
         <section className="py-14 md:py-20 px-4 md:px-12">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
-                संतुष्ट माता-पिता के <span className="text-poster-yellow">अनुभव</span>
+              <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+                {copy.testimonial.titlePrefix} <span className="text-poster-yellow">{copy.testimonial.titleHighlight}</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -543,8 +602,8 @@ export default function LandingPage() {
         <section className="py-14 md:py-20 px-4 md:px-12">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
-                अक्सर पूछे जाने वाले <span className="text-poster-yellow">सवाल (FAQ)</span>
+              <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+                {copy.faqSection.titlePrefix} <span className="text-poster-yellow">{copy.faqSection.titleHighlight}</span>
               </h2>
             </div>
             <div className="flex flex-col gap-4">
@@ -555,7 +614,7 @@ export default function LandingPage() {
                     <button onClick={() => toggleFaq(i)} className="faq-button">
                       <span className="flex items-center gap-3 text-left">
                         <span className={`faq-q-badge ${isOpen ? 'faq-q-badge-open' : ''}`}>?</span>
-                        <span>{faq.question}</span>
+                        <span className="text-lg md:text-xl font-bold">{faq.question}</span>
                       </span>
                       {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                     </button>
@@ -570,7 +629,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ===== FINAL CTA — अंतिम आमंत्रण (single, matches reference poster) ===== */}
+      {/* ===== FINAL CTA — अंतिम आमंत्रण ===== */}
       {settings.countdownEnabled && (
         <section className="py-14 md:py-20 px-4 md:px-12 text-center relative overflow-hidden">
           <div className="absolute inset-0 constellation-bg pointer-events-none" />
@@ -582,7 +641,7 @@ export default function LandingPage() {
                 <div className="final-headline-row">
                   <Hourglass className="hourglass-3d text-[#fde047]" size={64} />
                   <h2 className="final-headline">
-                    अंतिम आमंत्रण <span className="text-[#fde047]">!</span>
+                    {copy.footerCta.headline} <span className="text-[#fde047]">!</span>
                   </h2>
                 </div>
 
@@ -591,17 +650,19 @@ export default function LandingPage() {
                 <div className="final-stamp">{copy.footerCta.subtitle}</div>
 
                 <ul className="final-bullets">
-                  {copy.footerCta.bullets.map((b) => (
+                  {copy.footerCta.bullets.map((b, i) => {
+                    const Icon = FINAL_BULLET_ICONS[i % FINAL_BULLET_ICONS.length];
+                    return (
                     <li key={b}>
-                      <span><Target size={20} /></span>
+                      <span><Icon size={20} /></span>
                       <strong>{b}</strong>
                     </li>
-                  ))}
+                  );})}
                 </ul>
 
                 {/* Countdown */}
                 <div className="countdown-3d">
-                  <div className="countdown-label">ऑफर समाप्त होने में शेष समय</div>
+                  <div className="countdown-label">{copy.footerCta.countdownLabel}</div>
                   <div className="countdown-row">
                     {[
                       { val: timeLeft.hours, label: 'HOURS' },
@@ -611,7 +672,7 @@ export default function LandingPage() {
                       <React.Fragment key={t.label}>
                         <div className="flex flex-col items-center">
                           <div className="time-card-3d">{String(t.val).padStart(2, '0')}</div>
-                          <span className="time-label">{t.label}</span>
+                          <span className="time-label text-sm md:text-base">{t.label}</span>
                         </div>
                         {i < arr.length - 1 && <span className="time-colon">:</span>}
                       </React.Fragment>
@@ -620,9 +681,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="price-ribbon-3d mt-6">
-                  <span>केवल</span>
-                  <strong>₹{pricing.offerPrice}</strong>
-                  <span>में</span>
+                  <span>{copy.footerCta.price}</span>
                 </div>
 
                 <p className="text-poster-yellow font-black text-base md:text-lg mt-4 flex items-center justify-center gap-2">
@@ -638,15 +697,15 @@ export default function LandingPage() {
 
                 {/* Secure badges row */}
                 <div className="final-trust-row mt-6">
-                  <span><ShieldCheck size={16} /> Secure Payment</span>
-                  <span><XCircle size={16} className="text-red-600" /> No Fake Promises</span>
-                  <span><Lock size={16} /> Privacy Protected</span>
+                  <span><ShieldCheck size={16} /> {copy.footerCta.trustBadges[0] || 'Secure Payment'}</span>
+                  <span><XCircle size={16} className="text-red-600" /> {copy.footerCta.trustBadges[1] || 'No Fake Promises'}</span>
+                  <span><Lock size={16} /> {copy.footerCta.trustBadges[2] || 'Privacy Protected'}</span>
                 </div>
                 <p className="text-white/85 text-xs md:text-sm font-bold mt-3">{copy.footerCta.secureText}</p>
               </div>
 
               {/* RIGHT — poster image */}
-              <div className="final-invite-imgwrap">
+              <div className="final-invite-imgwrap sticky-image-mobile">
                 <img
                   src={POSTER_IMAGES.finalInvite}
                   alt="अंतिम आमंत्रण - अभी रजिस्टर करें"
@@ -660,19 +719,14 @@ export default function LandingPage() {
       )}
 
       {/* Footer */}
-      <footer className="py-10 px-4 md:px-12 bg-transparent text-center">
+      <footer className="site-footer py-10 px-4 md:px-12 text-center">
         <div className="flex justify-center flex-wrap gap-x-8 gap-y-3 mb-5 max-w-4xl mx-auto">
-          {[
-            ['Privacy Policy', '/privacy-policy'],
-            ['Terms & Conditions', '/terms'],
-            ['Refund Policy', '/refund-policy'],
-            ['Contact Support', '/contact']
-          ].map(([label, href]) => (
+          {copy.footer.links.map(({ label, href }) => (
             <a key={href} href={href} className="text-white text-xs md:text-sm font-bold hover:text-[#fde047] transition-colors">{label}</a>
           ))}
         </div>
         <p className="text-[#fde047]/90 text-xs font-semibold">
-          © {new Date().getFullYear()} {siteSettings?.websiteName || 'Prakrit Astro'}. All rights reserved.
+          © {new Date().getFullYear()} {copy.footer.copyrightName}. All rights reserved.
         </p>
       </footer>
 
@@ -698,7 +752,7 @@ export default function LandingPage() {
 
       {/* Floating WhatsApp */}
       {settings.whatsappNumber && (
-        <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Career Astro.`}
+        <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=${encodeURIComponent(copy.general.whatsappMessage)}`}
           target="_blank" rel="noreferrer"
           className="wa-pulse fixed right-4 bottom-24 md:bottom-6 z-[125] w-14 h-14 rounded-full bg-gradient-to-br from-[#22c55e] to-[#15803d] border-2 border-[#fde047] flex items-center justify-center text-white shadow-xl hover:scale-110 active:scale-90 transition-transform duration-300"
           aria-label="Contact WhatsApp">

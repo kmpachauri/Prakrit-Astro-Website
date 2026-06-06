@@ -196,12 +196,12 @@ export default function StaticPage({ type = 'privacy' }) {
       .catch(() => {});
   }, []);
   return (
-    <main className="min-h-screen bg-[#06120a] px-5 py-10 md:py-16 text-[#f4f9f4]">
+    <main className="app-green-page min-h-screen px-5 py-10 md:py-16 text-[#f4f9f4]">
       <div className="mx-auto max-w-3xl">
-        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-[#f37446] font-extrabold">
-          <ArrowLeft size={16} /> Back
+        <Link to="/" className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#fde047]/60 bg-[#052e16]/80 text-[#fde047] font-black text-sm hover:bg-[#fde047] hover:text-[#14532d] transition-all duration-200">
+          <ArrowLeft size={15} /> Back to Home
         </Link>
-        <div className="rounded-3xl border border-white/10 bg-[#0e2216]/80 p-7 md:p-10">
+        <div className="app-green-panel rounded-3xl p-7 md:p-10">
           <h1 className="font-heading text-3xl md:text-4xl font-black text-white mb-2">{page.title}</h1>
           {page.lastUpdated && (
             <p className="text-[#84a190] text-sm mb-8">Last Updated: {page.lastUpdated}</p>

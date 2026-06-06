@@ -21,8 +21,8 @@ export default function FailedPage() {
   const supportLink = `https://wa.me/${formatWhatsAppNumber(supportNumber)}?text=${encodeURIComponent(`Payment help needed. Order ID: ${orderId || 'N/A'}`)}`;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-[#06120a] text-center px-5 py-12">
-      <div className="w-full max-w-xl rounded-3xl border border-red-500/25 bg-[#0e2216]/80 p-8 md:p-12 shadow-2xl">
+    <main className="app-green-page min-h-screen flex flex-col items-center justify-center text-center px-5 py-12">
+      <div className="app-green-panel w-full max-w-xl rounded-3xl p-8 md:p-12">
         <AlertCircle className="mx-auto text-red-400 mb-5" size={64} />
         <h1 className="font-heading text-3xl md:text-4xl font-black text-white mb-3">Payment Failed</h1>
         <p className="text-[#cdded2] max-w-lg mx-auto mb-8">Payment process complete nahi ho paya. Aap retry kar sakte hain ya WhatsApp support se help le sakte hain.</p>
