@@ -1,22 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  MessageCircle, 
-  HelpCircle, 
-  CheckCircle, 
-  ChevronDown, 
-  ChevronUp, 
-  Star, 
-  Loader2, 
-  ShieldCheck, 
-  Award, 
-  Sparkles, 
-  Clock, 
-  Compass 
+import {
+  MessageCircle,
+  HelpCircle,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  Loader2,
+  ShieldCheck,
+  Award,
+  Sparkles,
+  Clock,
+  Compass,
+  Target,
+  TrendingUp,
+  UserCheck,
+  GraduationCap,
+  Lightbulb,
+  Hourglass,
+  AlertTriangle,
+  Briefcase,
+  Stethoscope,
+  Palette,
+  Calendar,
+  Lock,
+  XCircle,
+  ArrowRight
 } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const PAGE_CACHE_KEY = 'prakrit_landing_cache_v1';
+const ZODIAC_HERO_IMAGE = '/images/zodiac-hero.png';
 const formatWhatsAppNumber = (number = '') => number.replace(/\D/g, '');
 
 const readLandingCache = () => {
@@ -62,7 +77,7 @@ const PAGE_COPY = {
   workshop: {
     title: 'इस मास्टरक्लास में आपको क्या सीखने को मिलेगा?',
     items: [
-      { title: 'करियर मैppings साइंस', desc: 'कुंडली के दशम (10th) और द्वितीय (2nd) भाव से बच्चे के सही प्रोफेशन को सटीक पहचानना।' },
+      { title: 'करियर मैपिंग साइंस', desc: 'कुंडली के दशम (10th) और द्वितीय (2nd) भाव से बच्चे के सही प्रोफेशन को सटीक पहचानना।' },
       { title: 'फोकस और याददाश्त', desc: 'ग्रहों के वो आसान प्राकृत उपाय जो बच्चे की एकाग्रता और पढ़ाई में मन लगाने की क्षमता को 2X बढ़ा देंगे।' },
       { title: 'लाखों रुपयों की सीधी बचत', desc: 'कैसे 10वीं क्लास में लिया गया एक सही और ज्योतिषीय फैसला लाखों की ट्यूशन फीस और मानसिक तनाव बचा सकता है।' },
       { title: 'सही स्ट्रीम सिलेक्शन', desc: 'साइंस, कॉमर्स या आर्ट्स? ग्रहों की युति और मानसिक क्षमता के आधार पर सटीक और वैज्ञानिक चुनाव।' }
@@ -80,7 +95,7 @@ const PAGE_COPY = {
     ]
   },
   mentor: {
-    title: 'मिलिए अपने मार्गदर्शक से',
+    title: 'आपके मार्गदर्शक',
     role: 'Director - Tattoobaba Art Factory Pvt. Ltd. & Founder - Prakrit Career Jyotish',
     quote: 'एक बिजनेस लीडर और करियर कंसल्टेंट के रूप में, मैंने देखा है कि कैसे आज के युवा गलत करियर चुनकर जिंदगी के सबसे कीमती साल गंवा देते हैं। मेरा मिशन प्राकृत ज्योतिष के प्राचीन विज्ञान को आधुनिक करियर काउंसलिंग से जोड़कर, बच्चों को उनके जीवन की सही "प्राकृत" दिशा दिखाना है।'
   },
@@ -96,6 +111,8 @@ const PAGE_COPY = {
     cta: 'अपने बच्चे का भविष्य सुरक्षित करें - अभी बुक करें 🚀'
   }
 };
+
+const WORKSHOP_ICONS = [GraduationCap, Star, Target, TrendingUp];
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -143,7 +160,7 @@ export default function LandingPage() {
           setFaqs(nextCache.faqs);
         }
         writeLandingCache(nextCache);
-        
+
         setError(null);
       } catch {
         setError('Failed to load page. Please try again later.');
@@ -193,25 +210,25 @@ export default function LandingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#030a05] gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="relative flex items-center justify-center">
-          <div className="absolute w-16 h-16 rounded-full border-4 border-[#ecc472]/20 border-t-[#ecc472] animate-spin"></div>
-          <Loader2 className="animate-pulse text-[#f37446]" size={32} />
+          <div className="absolute w-16 h-16 rounded-full border-4 border-[#fde047]/30 border-t-[#fde047] animate-spin"></div>
+          <Loader2 className="animate-pulse text-[#fde047]" size={32} />
         </div>
-        <p className="text-[#a8c1b0] font-medium tracking-wide mt-2 animate-pulse">ब्रह्मांडीय गणना की जा रही है...</p>
+        <p className="text-[#fef9c3] font-bold tracking-wide mt-2 animate-pulse">ब्रह्मांडीय गणना की जा रही है...</p>
       </div>
     );
   }
 
   if (error || !pageData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#030a05] gap-6 text-center px-4">
-        <div className="p-4 bg-red-500/10 rounded-full border border-red-500/20">
-          <HelpCircle className="text-red-400" size={40} />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 text-center px-4">
+        <div className="p-4 bg-red-500/15 rounded-full border-2 border-red-300/40">
+          <HelpCircle className="text-red-100" size={40} />
         </div>
-        <h2 className="font-heading font-bold text-2xl text-red-400">वेबसाइट लोड करने में त्रुटि</h2>
-        <p className="text-[#a8c1b0] max-w-md">{error || 'कोई सक्रिय लैंडिंग पेज नहीं मिला।'}</p>
-        <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#f37446] to-[#d6431a] text-white font-bold shadow-lg hover:shadow-[#f37446]/20 transition-all duration-300" onClick={() => window.location.reload()}>पुनः प्रयास करें</button>
+        <h2 className="font-heading font-black text-2xl text-[#fde047]">वेबसाइट लोड करने में त्रुटि</h2>
+        <p className="text-white max-w-md">{error || 'कोई सक्रिय लैंडिंग पेज नहीं मिला।'}</p>
+        <button className="btn-poster px-6 py-3 rounded-xl font-black" onClick={() => window.location.reload()}>पुनः प्रयास करें</button>
       </div>
     );
   }
@@ -247,279 +264,380 @@ export default function LandingPage() {
       secureText: content.footerSection?.secureText || '100% सुरक्षित गेटवे: Razorpay, UPI, Credit/Debit Cards'
     }
   };
-  const mentorName = copy.mentor.name || 'Pandit Ramendra & Rekha';
+  const mentorName = copy.mentor.name || 'Pandit Ramendra & Rekha Tattoobaba';
   const filteredTestimonials = testimonials.filter(t => t.language === 'hinglish' || !t.language);
+  const heroIllustration = pageData.media?.heroImage || ZODIAC_HERO_IMAGE;
 
   return (
-    <div className="relative overflow-x-hidden bg-[#030a05] text-[#e6efe8] font-sans antialiased selection:bg-[#f37446]/30 selection:text-white pb-28 md:pb-0">
-      
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#f37446]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[120vh] right-1/4 w-[600px] h-[600px] bg-[#25d366]/3 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-10 w-[400px] h-[400px] bg-[#ecc472]/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="relative overflow-x-hidden text-white font-sans antialiased pb-28 md:pb-0">
 
       {/* Announcement Bar */}
       {copy.announcementBar && (
-        <div className="bg-gradient-to-r from-[#d6431a] via-[#f37446] to-[#d6431a] text-white text-center py-2.5 px-4 text-xs md:text-sm font-extrabold tracking-wide z-[100] relative shadow-md border-b border-white/10">
+        <div className="bg-gradient-to-r from-[#b91c1c] via-[#dc2626] to-[#b91c1c] text-white text-center py-2.5 px-4 text-xs md:text-sm font-extrabold tracking-wide z-[100] relative shadow-md border-b-2 border-[#fde047]/50">
           <span className="inline-flex items-center gap-2">
-            <Sparkles size={14} className="animate-pulse text-[#ecc472]" />
+            <Sparkles size={14} className="animate-pulse text-[#fde047]" />
             {copy.announcementBar}
           </span>
         </div>
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-4 bg-[#030a05]/75 backdrop-blur-xl border-b border-white/5 shadow-lg">
+      <header className="sticky top-0 z-[80] flex items-center justify-between gap-4 px-4 md:px-12 py-3 bg-[#052e16]/95 backdrop-blur-md border-b-2 border-[#fde047]/40 shadow-lg">
         <div className="flex items-center gap-3">
           {pageData.media?.logo ? (
-            <img src={pageData.media.logo} alt="Logo" className="w-10 h-10 rounded-xl object-cover border border-[#f37446]/50 shadow-md shadow-[#f37446]/10" />
+            <img src={pageData.media.logo} alt="Logo" className="w-11 h-11 rounded-full object-cover border-2 border-[#fde047] shadow-md" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f37446] to-[#d6431a] flex items-center justify-center font-bold text-white shadow-md">P</div>
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#fde047] to-[#ca8a04] flex items-center justify-center font-black text-[#14532d] shadow-md border-2 border-[#fde047]">P</div>
           )}
-          <span className="font-heading font-black text-xl md:text-2xl tracking-tight bg-gradient-to-r from-white via-[#e6efe8] to-[#ecc472] bg-clip-text text-transparent">
-            {siteSettings?.websiteName || 'Prakrit Astro'}
-          </span>
+          <div className="leading-tight">
+            <div className="font-heading font-black text-lg md:text-2xl tracking-tight text-white">
+              {siteSettings?.websiteName || 'Prakrit'} <span className="text-[#fde047]">Astro</span>
+            </div>
+            <div className="text-[10px] md:text-xs text-[#fde047]/90 font-semibold">ज्योतिष से सही दिशा, बच्चे का सुनहरा भविष्य</div>
+          </div>
         </div>
         {settings.whatsappNumber && (
           <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Astro.`} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#25D366] to-[#0e6e63] text-white text-xs md:text-sm font-bold shadow-md shadow-[#25D366]/10 hover:brightness-110 hover:-translate-y-0.5 transition-all duration-300">
-            <MessageCircle size={16} /><span className="hidden sm:inline">WhatsApp Support</span>
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#22c55e] to-[#15803d] border-2 border-[#fde047] text-white text-xs md:text-sm font-black shadow-md hover:brightness-110 hover:-translate-y-0.5 transition-all duration-300">
+            <MessageCircle size={16} /><span>सपोर्ट</span>
           </a>
         )}
       </header>
 
+      {/* Trust strip */}
+      <div className="bg-[#052e16] border-b-2 border-[#166534] px-4 md:px-12 py-2.5">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-3 md:gap-6 text-xs md:text-sm">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#064e3b] border border-[#fde047]/50 text-white font-bold">
+            <ShieldCheck size={14} className="text-[#fde047]" /> Secure Payment
+          </span>
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#064e3b] border border-[#fde047]/50 text-white font-bold">
+            <Award size={14} className="text-[#fde047]" /> No Fake Promises
+          </span>
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#064e3b] border border-[#fde047]/50 text-white font-bold">
+            <Lock size={14} className="text-[#fde047]" /> Privacy Protected
+          </span>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative min-h-[calc(100vh-70px)] flex items-center px-4 md:px-12 py-12 lg:py-20 overflow-hidden border-b border-white/5">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          
+      <section className="relative px-4 md:px-12 py-10 md:py-16 constellation-bg overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
           {/* Left Hero Column */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[#ecc472] text-xs font-bold tracking-wider border border-[#ecc472]/30 bg-[#ecc472]/10 backdrop-blur-md mb-6 animate-fade-in">
-              <Sparkles size={12} className="animate-spin-slow" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[#fde047] text-xs md:text-sm font-black tracking-wide border-2 border-[#fde047]/70 bg-[#052e16]/80 backdrop-blur-md mb-6 animate-fade-in">
+              <Sparkles size={14} className="animate-spin-slow" />
               {copy.hero.question}
             </div>
 
-            <h1 className="font-heading font-black text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.15] tracking-tight text-white mb-6">
-              {copy.hero.headline.split(' ').map((word, i) => 
-                word.includes('बर्बाद') || word.includes('लाखों') ? <span key={i} className="text-[#f37446]">{word} </span> : word + ' '
-              )}
+            {/* HEADLINE — bright yellow for full legibility */}
+            <h1 className="font-heading font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.15] tracking-tight text-poster-yellow mb-6">
+              {copy.hero.headline}
             </h1>
 
-            <p className="text-[#cdded2] text-base md:text-lg lg:text-xl leading-relaxed mb-6 max-w-2xl border-l-2 border-[#ecc472]/40 pl-4">
-              {copy.hero.subheadline}
-            </p>
-
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white font-bold text-sm border border-white/10 bg-white/5 backdrop-blur-md mb-8">
-              <Clock size={16} className="text-[#f37446]" />
-              {copy.hero.masterclassTag}
+            <div className="text-veil mb-6 border-l-4 border-[#fde047]">
+              <p className="text-white text-base md:text-lg lg:text-xl leading-relaxed max-w-2xl font-semibold">
+                <Target className="inline-block text-[#fde047] mr-2 -mt-1" size={20} />
+                {copy.hero.subheadline}
+              </p>
             </div>
 
-            {/* Price Badge for Mobile (Hidden on Desktop grid) */}
-            <div className="lg:hidden w-full mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
-              <div>
-                <span className="text-[#84a190] line-through text-sm mr-2">₹{pricing.originalPrice}</span>
-                <span className="text-2xl font-black text-[#ecc472]">₹{pricing.offerPrice}/-</span>
+            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl text-white font-black text-sm md:text-base panel-dark mb-6">
+              <span className="w-10 h-10 rounded-full bg-[#fde047] flex items-center justify-center"><Calendar size={20} className="text-[#14532d]" /></span>
+              <div className="leading-tight">
+                <div className="text-[#fde047]">{copy.hero.masterclassTag}</div>
+                <div className="text-[11px] md:text-xs text-white font-bold">सीधे आपकी स्क्रीन पर</div>
               </div>
-              <span className="text-xs text-[#cdded2] bg-[#f37446]/20 px-2 py-1 rounded border border-[#f37446]/30">{copy.hero.priceNote}</span>
+            </div>
+
+            {/* Price Block */}
+            <div className="w-full max-w-xl mb-6 grid grid-cols-2 gap-3">
+              <div className="panel-dark rounded-2xl px-4 py-3 text-center">
+                <div className="text-[10px] uppercase tracking-wider text-white font-bold mb-1">Special Offer</div>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-sm line-through text-white/70">₹{pricing.originalPrice}</span>
+                  <span className="text-3xl md:text-4xl font-black text-poster-yellow">₹{pricing.offerPrice}/-</span>
+                </div>
+              </div>
+              <div className="ribbon-red rounded-2xl px-4 py-3 text-center flex flex-col justify-center">
+                <div className="text-[10px] uppercase tracking-wider font-black mb-1 text-white">केवल इस वेबिनार के लिए</div>
+                <div className="text-2xl md:text-3xl font-black text-poster-yellow">₹{pricing.offerPrice}/- ONLY</div>
+              </div>
             </div>
 
             {settings.paymentEnabled && (
               <button onClick={handleBookNow}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-[#f37446] via-[#d6431a] to-[#f37446] text-white font-black text-base md:text-lg shadow-xl shadow-[#f37446]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-wide group">
-                {copy.hero.ctaText}
-                <span className="block text-xs font-normal text-white/80 normal-case mt-0.5">साइनअप करने में केवल 1 मिनट लगता है</span>
+                className="btn-poster pulse-cta w-full sm:w-auto px-6 md:px-10 py-4 rounded-2xl font-black text-base md:text-lg tracking-wide group inline-flex items-center justify-center gap-3">
+                <ArrowRight className="w-6 h-6" />
+                <span className="text-left leading-tight">
+                  <span className="block">{copy.hero.ctaText}</span>
+                  <span className="block text-[11px] md:text-xs font-bold opacity-85 mt-0.5">साइनअप करने में केवल 1 मिनट लगता है</span>
+                </span>
               </button>
             )}
-
-            <div className="flex flex-wrap gap-3 mt-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-xs text-[#cdded2]">
-                <ShieldCheck size={14} className="text-[#ecc472]" /> secure payment
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-xs text-[#cdded2]">
-                <Award size={14} className="text-[#ecc472]" /> no fake promises
-              </div>
-            </div>
           </div>
 
-          {/* Right Hero Column: Premium Interactive Astro Mockup Container */}
+          {/* Right Hero Column: Glowing zodiac wheel illustration */}
           <div className="lg:col-span-5 relative w-full flex justify-center items-center">
-            <div className="relative w-full max-w-[400px] aspect-square rounded-3xl p-1 bg-gradient-to-br from-[#ecc472]/30 via-transparent to-[#f37446]/20 shadow-2xl backdrop-blur-xl">
-              <div className="w-full h-full rounded-[22px] bg-[#051107] overflow-hidden relative flex flex-col justify-center items-center p-6 text-center border border-white/5">
-                
-                {/* AI Astrology Visual Overlay */}
-                <img 
-                  src={pageData.media?.heroImage || '/images/career-boost-hero.png'}
-                  alt="Cosmic Energy Chart" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-screen pointer-events-none" 
+            <div className="relative w-full max-w-[480px] aspect-square">
+              {/* Glow halo behind illustration */}
+              <div className="absolute inset-0 hero-glow rounded-full" />
+              {/* Slow-rotating outer ring */}
+              <div className="absolute inset-0 rounded-full border-[3px] border-dashed border-[#fde047]/40 animate-spin-slow" />
+              {/* Generated zodiac wheel image */}
+              <div className="absolute inset-2 rounded-full overflow-hidden border-4 border-[#fde047] shadow-[0_0_60px_rgba(253,224,71,0.45)] bg-[#052e16]">
+                <img
+                  src={heroIllustration}
+                  alt="ज्योतिषीय करियर मार्गदर्शन – zodiac wheel"
+                  width={1024}
+                  height={1024}
+                  className="w-full h-full object-cover"
+                  onError={e => { e.target.style.display = 'none'; }}
                 />
-                
-                {/* Glowing Core */}
-                <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-[#f37446]/40 to-[#ecc472]/30 absolute blur-3xl pointer-events-none" />
-                
-                <Compass className="text-[#ecc472] w-16 h-16 mb-4 animate-spin-slow relative z-10" />
-                
-                <h3 className="font-heading font-black text-xl text-white relative z-10 mb-2">प्राकृत ज्योतिष X आधुनिक करियर गाइड</h3>
-                <p className="text-xs text-[#cdded2] relative z-10 max-w-xs mb-6">ग्रहों की चाल और आपके बच्चे के इनबिल्ट टैलेंट का सबसे आधुनिक वैज्ञानिक विश्लेषण</p>
-                
-                {/* Pricing Box embedded inside card */}
-                <div className="hidden lg:block w-full bg-black/40 border border-white/10 rounded-2xl p-4 relative z-10">
-                  <p className="text-xs text-[#84a190] uppercase tracking-wider mb-1">{copy.hero.priceNote}</p>
-                  <div className="flex justify-center items-baseline gap-2">
-                    <span className="text-sm line-through text-[#84a190]">₹{pricing.originalPrice}</span>
-                    <span className="text-3xl font-black text-[#ecc472]">₹{pricing.offerPrice}</span>
-                    <span className="text-xs text-white/70">/- मात्र</span>
-                  </div>
-                </div>
-
               </div>
             </div>
           </div>
-
         </div>
+
+        {/* Countdown teaser strip */}
+        {settings.countdownEnabled && (
+          <div className="max-w-7xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="panel-dark rounded-2xl p-4 flex items-center gap-4">
+              <Hourglass className="text-[#fde047]" size={36} />
+              <div className="flex-1">
+                <div className="text-white text-xs font-bold uppercase tracking-wider mb-2">ऑफर समाप्त होने में शेष समय</div>
+                <div className="flex items-center gap-2">
+                  {[
+                    { val: timeLeft.hours, label: 'HOURS' },
+                    { val: timeLeft.minutes, label: 'MINUTES' },
+                    { val: timeLeft.seconds, label: 'SECONDS' }
+                  ].map((t, i, arr) => (
+                    <React.Fragment key={t.label}>
+                      <div className="text-center">
+                        <div className="time-card rounded-lg px-3 py-1.5 font-heading font-black text-xl md:text-2xl">{String(t.val).padStart(2, '0')}</div>
+                        <div className="text-[9px] font-black text-[#fde047] mt-1 tracking-wider">{t.label}</div>
+                      </div>
+                      {i < arr.length - 1 && <span className="text-[#fde047] font-black text-2xl">:</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {settings.paymentEnabled && (
+              <button onClick={handleBookNow} className="btn-poster rounded-2xl px-6 py-5 flex items-center justify-center gap-3 font-black text-base md:text-lg">
+                <span className="w-12 h-12 rounded-full bg-[#7f1d1d] flex items-center justify-center"><ArrowRight className="text-[#fde047]" size={24} /></span>
+                <div className="text-left leading-tight">
+                  <div>अभी बुक करें – केवल ₹{pricing.offerPrice}/- में</div>
+                  <div className="text-xs font-bold opacity-90">सीटें बहुत सीमित हैं!</div>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
       </section>
 
-      {/* Problems Section */}
-      <section className="py-20 md:py-28 px-4 md:px-12 bg-[#051107]/60 border-b border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {copy.problems.title}
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#f37446] to-[#ecc472] mx-auto rounded-full" />
+      {/* 3 PARENTS' MISTAKES — vertical numbered cards */}
+      <section className="py-16 md:py-20 px-4 md:px-12 relative">
+        <div className="absolute inset-0 constellation-bg opacity-80 pointer-events-none" />
+        <div className="max-w-4xl mx-auto relative">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-block bg-[#052e16] border-2 border-[#fde047] rounded-2xl px-6 py-3 mb-2 shadow-[0_8px_22px_rgba(0,0,0,0.4)]">
+              <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
+                माता-पिता की <span className="text-poster-yellow">3 बड़ी गलतियाँ</span>
+              </h2>
+            </div>
+            <p className="text-white font-semibold mt-3 text-sm md:text-base">{copy.problems.title}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {copy.problems.items.map((prob, i) => (
-              <div key={i} className="group relative rounded-2xl border border-white/5 bg-gradient-to-b from-white/[0.04] to-transparent p-6 md:p-8 backdrop-blur-xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:border-[#f37446]/30 hover:shadow-xl hover:shadow-[#f37446]/5">
-                <div className="w-12 h-12 rounded-xl bg-[#f37446]/10 border border-[#f37446]/20 flex items-center justify-center text-[#f37446] mb-6 group-hover:bg-[#f37446] group-hover:text-white transition-all duration-300">
-                  <HelpCircle size={22} />
+          {/* Vertical numbered list */}
+          <div className="flex flex-col gap-5 md:gap-6">
+            {copy.problems.items.slice(0, 3).map((prob, i) => (
+              <div key={i} className="mistake-card rounded-2xl p-5 md:p-7 transition-transform duration-300 hover:-translate-y-1">
+                <div className="flex items-start gap-5">
+                  <div className="num-circle w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center font-heading font-black text-2xl md:text-3xl flex-shrink-0">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-heading font-black text-lg md:text-2xl text-poster-yellow leading-tight mb-2">
+                      {prob.title}
+                    </h4>
+                    <p className="text-white text-sm md:text-base leading-relaxed font-medium">
+                      {prob.desc}
+                    </p>
+                  </div>
                 </div>
-                <h4 className="font-heading font-bold text-lg text-white mb-3 group-hover:text-[#ecc472] transition-colors">{prob.title}</h4>
-                <p className="text-[#cdded2] text-sm leading-relaxed">{prob.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="relative max-w-3xl mx-auto mt-16 rounded-2xl text-center p-6 md:p-8 overflow-hidden border border-[#ecc472]/30 shadow-xl"
-            style={{ background: 'linear-gradient(135deg, #0e2913, #051107)' }}>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,116,70,0.1),transparent_65%)] pointer-events-none" />
-            <p className="relative z-10 font-heading font-black text-[#ecc472] text-lg md:text-xl flex flex-col sm:flex-row items-center justify-center gap-2">
+          <div className="relative max-w-3xl mx-auto mt-12 panel-light rounded-2xl text-center p-6 md:p-8">
+            <p className="font-heading font-black text-[#14532d] text-base md:text-xl">
               {copy.problems.conclusion}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Workshop Offerings Section */}
-      <section className="py-20 md:py-28 px-4 md:px-12 bg-[#030a05]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {copy.workshop.title}
+      {/* Why sahi career disha — bulleted list */}
+      <section className="py-16 md:py-20 px-4 md:px-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+              क्यों जरूरी है <span className="text-poster-yellow">सही करियर दिशा?</span>
+              <GraduationCap className="inline-block ml-3 text-[#14532d] bg-[#fde047] rounded-md p-1" size={48} />
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#25d366] to-[#ecc472] mx-auto rounded-full" />
+            <p className="text-white font-semibold mt-4">आज के माता-पिता की सबसे बड़ी चुनौती है:</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {copy.workshop.items.map((item, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-md hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 bg-gradient-to-br from-[#f37446]/20 to-[#ecc472]/20 border border-[#f37446]/20">
-                  <CheckCircle className="text-[#ecc472]" size={20} />
-                </div>
-                <h4 className="font-heading font-bold text-base md:text-lg text-white mb-2">{item.title}</h4>
-                <p className="text-[#cdded2] text-xs md:text-sm leading-relaxed">{item.desc}</p>
-              </div>
+          <ul className="panel-dark rounded-2xl p-6 md:p-8 flex flex-col gap-4">
+            {[
+              'बच्चा किस क्षेत्र में सबसे अच्छा करेगा?',
+              'कौन-सा करियर उसके स्वभाव और क्षमता के अनुसार है?',
+              'भविष्य में किस क्षेत्र में सफलता की संभावना अधिक है?'
+            ].map((q, i) => (
+              <li key={i} className="flex items-start gap-4">
+                <span className="y-bullet" aria-hidden />
+                <span className="text-white font-bold text-base md:text-lg leading-snug">{q}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* The Big Reveal / Attraction Bonus Section */}
-      <section className="py-20 px-4 md:px-12 bg-[#051107]/40 border-t border-b border-white/5">
-        <div className="relative max-w-4xl mx-auto rounded-[32px] text-center p-8 md:p-14 overflow-hidden border border-white/10 shadow-2xl"
-          style={{ background: 'linear-gradient(160deg, #091f0f 0%, #030a05 100%)' }}>
-          
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[#f37446]/10 rounded-full blur-[80px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#ecc472]/5 rounded-full blur-[80px] pointer-events-none" />
+      {/* Workshop Offerings — bulleted */}
+      <section className="py-16 md:py-20 px-4 md:px-12 relative">
+        <div className="absolute inset-0 constellation-bg opacity-70 pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+              इस मास्टरक्लास में आपको<br /><span className="text-poster-yellow">क्या सीखने को मिलेगा?</span>
+            </h2>
+          </div>
+
+          <ul className="panel-dark rounded-2xl p-6 md:p-8 flex flex-col gap-5">
+            {copy.workshop.items.map((item, i) => {
+              const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
+              return (
+                <li key={i} className="flex items-start gap-4">
+                  <span className="y-bullet" aria-hidden />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <Icon className="text-[#fde047]" size={22} />
+                      <h4 className="font-heading font-black text-lg md:text-xl text-poster-yellow leading-tight">{item.title}</h4>
+                    </div>
+                    <p className="text-white text-sm md:text-base leading-relaxed font-medium">{item.desc}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      {/* Bonus Reveal */}
+      <section className="py-16 md:py-20 px-4 md:px-12">
+        <div className="relative max-w-5xl mx-auto panel-dark rounded-[28px] text-center p-8 md:p-12 overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#fde047]/15 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#22c55e]/20 rounded-full blur-[80px] pointer-events-none" />
 
           <div className="relative z-10">
-            <span className="inline-flex rounded-full bg-gradient-to-r from-[#f37446] to-[#d6431a] text-white text-[10px] tracking-widest font-black uppercase px-4 py-1.5 shadow-md mb-6">
-              {copy.reveal.badge}
+            <span className="inline-flex rounded-full bg-gradient-to-r from-[#fde047] to-[#ca8a04] text-[#7f1d1d] text-[11px] tracking-widest font-black uppercase px-5 py-2 shadow-md mb-6 border-2 border-[#fef08a]">
+              ⭐ {copy.reveal.badge}
             </span>
-            <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
+            <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-poster-yellow tracking-tight mb-4">
               {copy.reveal.title}
             </h3>
-            <p className="text-[#cdded2] text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p className="text-white text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
               {copy.reveal.desc}
             </p>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
               {copy.reveal.bullets.map((bullet, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm text-white hover:bg-white/[0.05] transition-all duration-200">
-                  <Sparkles className="text-[#ecc472] w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm leading-relaxed">{bullet}</span>
-                </div>
+                <li key={i} className="flex items-start gap-3 p-4 rounded-xl border-2 border-[#fde047]/40 bg-[#052e16] text-white hover:border-[#fde047] transition-all">
+                  <CheckCircle className="text-[#fde047] w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm leading-relaxed text-white font-semibold">{bullet}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Professional Mentor Section */}
-      <section className="py-20 md:py-28 px-4 md:px-12 bg-[#030a05]">
+      {/* Mentor Section */}
+      <section className="py-16 md:py-20 px-4 md:px-12">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-              {copy.mentor.title}
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#f37446] to-[#ecc472] mx-auto rounded-full" />
+          <div className="text-center mb-10">
+            <div className="inline-block panel-light rounded-2xl px-8 py-3 border-4">
+              <h2 className="font-heading font-black text-2xl md:text-4xl text-[#14532d] tracking-tight">
+                {copy.mentor.title}
+              </h2>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 md:gap-12 items-center p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl shadow-xl">
-            <div className="w-44 h-44 md:w-52 md:h-52 rounded-2xl overflow-hidden mx-auto border-2 border-[#ecc472]/30 shadow-lg relative group">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden mentor-ring mb-6">
               <img
                 src={pageData.media?.guruImage || '/images/profile_logo.jpeg'}
-                alt={mentorName} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                alt={mentorName}
+                className="w-full h-full object-cover"
                 onError={e => { e.target.src = '/images/profile_logo.jpeg'; }}
               />
             </div>
-            <div className="text-center md:text-left">
-              <h3 className="font-heading font-black text-xl md:text-2xl text-white mb-2">{mentorName}</h3>
-              <p className="text-[#f37446] text-xs md:text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/5 pb-3">{copy.mentor.role}</p>
-              <p className="text-[#cdded2] text-sm md:text-base leading-relaxed italic text-white/90">
+
+            <div className="panel-dark rounded-2xl px-6 md:px-10 py-5 mb-6 inline-block">
+              <h3 className="font-heading font-black text-xl md:text-3xl text-white mb-1">{mentorName}</h3>
+              <div className="text-2xl md:text-4xl font-black text-poster-yellow tracking-wide">ASTRO &amp; GEMS <span className="text-[#fde047]">369</span></div>
+            </div>
+
+            <ul className="w-full max-w-2xl flex flex-col gap-3">
+              {[
+                '36+ वर्षों का प्राकृत ज्योतिष अनुभव',
+                'हजारों बच्चों और परिवारों को सही दिशा देने का अनुभव',
+                'टैरो, ज्योतिष, अंक ज्योतिष एवं रत्न विज्ञान में विशेषज्ञता'
+              ].map((b, i) => (
+                <li key={i} className="flex items-center gap-3 panel-dark rounded-full px-5 py-3">
+                  <span className="w-9 h-9 rounded-full bg-[#fde047] flex items-center justify-center flex-shrink-0 border-2 border-[#14532d]">
+                    <CheckCircle className="text-[#14532d]" size={20} />
+                  </span>
+                  <span className="text-white font-bold text-sm md:text-base text-left">{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="text-veil mt-8 max-w-3xl border-l-4 border-[#fde047]">
+              <p className="text-white text-sm md:text-base leading-relaxed italic">
                 "{copy.mentor.quote}"
               </p>
             </div>
+            <p className="text-[#fde047] text-xs md:text-sm font-bold mt-3">{copy.mentor.role}</p>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
       {filteredTestimonials.length > 0 && (
-        <section className="py-20 md:py-28 px-4 md:px-12 bg-[#051107]/40 border-t border-b border-white/5">
+        <section className="py-16 md:py-20 px-4 md:px-12">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-                संतुष्ट माता-पिता के अनुभव (Client Feedback)
+            <div className="text-center mb-12">
+              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
+                संतुष्ट माता-पिता के <span className="text-poster-yellow">अनुभव</span>
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-[#ecc472] to-[#f37446] mx-auto rounded-full" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredTestimonials.map((test, i) => (
-                <div key={i} className="p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/5 shadow-md flex flex-col justify-between">
+                <div key={i} className="panel-light rounded-2xl p-6 md:p-7 flex flex-col justify-between">
                   <div>
-                    <div className="flex justify-between items-start gap-4 mb-4">
+                    <div className="flex justify-between items-start gap-4 mb-3">
                       <div>
-                        <span className="font-bold text-white block">{test.name}</span>
-                        {test.location && <span className="text-[#84a190] text-xs block mt-0.5">📍 {test.location}</span>}
+                        <span className="font-black text-[#14532d] block text-lg">{test.name}</span>
+                        {test.location && <span className="text-[#15803d] text-xs block mt-0.5 font-semibold">📍 {test.location}</span>}
                       </div>
-                      <div className="flex gap-0.5 text-[#ecc472]">
-                        {[...Array(test.rating || 5)].map((_, j) => <Star key={j} size={14} fill="#ecc472" stroke="none" />)}
+                      <div className="flex gap-0.5 text-[#ca8a04]">
+                        {[...Array(test.rating || 5)].map((_, j) => <Star key={j} size={16} fill="#ca8a04" stroke="none" />)}
                       </div>
                     </div>
-                    <p className="text-[#cdded2] text-sm leading-relaxed italic">"{test.message}"</p>
+                    <p className="text-[#14532d] text-sm md:text-base leading-relaxed italic">"{test.message}"</p>
                   </div>
                 </div>
               ))}
@@ -528,28 +646,30 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       {copy.faqs.length > 0 && (
-        <section className="py-20 md:py-28 px-4 md:px-12 bg-[#030a05]">
+        <section className="py-16 md:py-20 px-4 md:px-12">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-4">
-                अक्सर पूछे जाने वाले सवाल (FAQ)
+            <div className="text-center mb-10">
+              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
+                अक्सर पूछे जाने वाले <span className="text-poster-yellow">सवाल (FAQ)</span>
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-white to-transparent mx-auto rounded-full" />
             </div>
 
             <div className="flex flex-col gap-4">
               {copy.faqs.map((faq, i) => {
                 const isOpen = openFaqId === i;
                 return (
-                  <div key={i} className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white/[0.05] border-[#f37446]/30 shadow-md' : 'bg-white/[0.02] border-white/5 hover:border-white/10'}`}>
-                    <button onClick={() => toggleFaq(i)} className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left font-bold text-sm md:text-base text-white hover:text-[#f37446] transition-colors min-h-[56px]">
-                      <span>{faq.question}</span>
-                      {isOpen ? <ChevronUp size={18} className="text-[#f37446]" /> : <ChevronDown size={18} />}
+                  <div key={i} className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden ${isOpen ? 'panel-light' : 'panel-dark'}`}>
+                    <button onClick={() => toggleFaq(i)} className={`w-full flex items-center justify-between gap-4 px-5 md:px-6 py-4 text-left font-black text-sm md:text-base min-h-[60px] ${isOpen ? 'text-[#14532d]' : 'text-[#fde047]'}`}>
+                      <span className="flex items-center gap-3">
+                        <span className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-black ${isOpen ? 'bg-[#14532d] text-[#fde047]' : 'bg-[#fde047] text-[#14532d]'}`}>?</span>
+                        {faq.question}
+                      </span>
+                      {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                     </button>
                     {isOpen && (
-                      <div className="px-6 pb-5 pt-2 text-[#cdded2] text-xs md:text-sm leading-relaxed border-t border-white/5 animate-fade-in">
+                      <div className="px-5 md:px-6 pb-5 pt-2 text-[#14532d] text-sm md:text-base leading-relaxed border-t-2 border-[#fde047]/40 animate-fade-in font-medium">
                         {faq.answer}
                       </div>
                     )}
@@ -561,85 +681,116 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* Urgency & Live Countdown Component */}
+      {/* Final Urgency CTA — अंतिम आमंत्रण */}
       {settings.countdownEnabled && (
-        <section className="py-20 px-4 md:px-12 text-center border-t border-white/5 relative"
-          style={{ background: 'radial-gradient(circle at top, rgba(236,116,70,0.12), transparent 60%)' }}>
-          
-          <div className="max-w-4xl mx-auto">
-            <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white mb-4 leading-tight">
-              {copy.footerCta.title}
-            </h3>
-            <p className="text-[#f37446] font-bold text-sm md:text-base tracking-wide mb-8">
-              {copy.footerCta.seats}
-            </p>
-
-            {/* Premium Dynamic Timer Card */}
-            <div className="flex justify-center gap-4 md:gap-6 items-center mb-10">
-              {[
-                { val: timeLeft.hours, label: 'Hours' }, 
-                { val: timeLeft.minutes, label: 'Minutes' }, 
-                { val: timeLeft.seconds, label: 'Seconds' }
-              ].map((timeUnit, i, arr) => (
-                <React.Fragment key={timeUnit.label}>
-                  <div className="flex flex-col items-center">
-                    <div className="min-w-[64px] md:min-w-[84px] min-h-[64px] md:min-h-[84px] rounded-xl bg-gradient-to-b from-white/[0.07] to-white/[0.02] border border-white/10 flex items-center justify-center font-heading font-black text-[#ecc472] text-2xl md:text-4xl shadow-md">
-                      {String(timeUnit.val).padStart(2, '0')}
-                    </div>
-                    <span className="text-[#84a190] text-[10px] font-bold uppercase tracking-widest mt-2">{timeUnit.label}</span>
-                  </div>
-                  {i < arr.length - 1 && <span className="text-[#f37446] text-2xl md:text-3xl font-black mb-5 animate-pulse">:</span>}
-                </React.Fragment>
-              ))}
+        <section className="py-16 md:py-20 px-4 md:px-12 text-center relative overflow-hidden">
+          <div className="absolute inset-0 constellation-bg pointer-events-none" />
+          <div className="max-w-5xl mx-auto relative z-10">
+            <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
+              <Hourglass className="text-[#fde047]" size={64} />
+              <h3 className="font-heading font-black text-3xl sm:text-4xl md:text-6xl text-poster-yellow tracking-tight leading-tight">
+                अंतिम आमंत्रण <span className="text-[#fde047]">!</span>
+              </h3>
             </div>
 
-            <p className="text-[#ecc472] font-semibold text-sm md:text-base mb-6">{copy.footerCta.price}</p>
+            <div className="text-veil inline-block mx-auto mb-2">
+              <p className="font-heading font-black text-xl sm:text-2xl md:text-3xl text-white leading-tight">
+                {copy.footerCta.title}
+              </p>
+            </div>
+
+            <div className="inline-block bg-[#fde047] text-[#14532d] font-black text-base md:text-xl px-6 py-2 rounded-xl my-5 -rotate-1 shadow-lg border-2 border-[#14532d]">
+              आज ही अपनी सीट सुरक्षित करें
+            </div>
+
+            {/* Premium countdown card */}
+            <div className="panel-dark rounded-3xl p-6 md:p-8 max-w-3xl mx-auto my-8">
+              <div className="text-white text-xs md:text-sm font-bold uppercase tracking-widest mb-4">ऑफर समाप्त होने में शेष समय</div>
+              <div className="flex justify-center gap-3 md:gap-5 items-center">
+                {[
+                  { val: timeLeft.hours, label: 'HOURS' },
+                  { val: timeLeft.minutes, label: 'MINUTES' },
+                  { val: timeLeft.seconds, label: 'SECONDS' }
+                ].map((t, i, arr) => (
+                  <React.Fragment key={t.label}>
+                    <div className="flex flex-col items-center">
+                      <div className="time-card min-w-[72px] md:min-w-[100px] min-h-[72px] md:min-h-[100px] rounded-2xl flex items-center justify-center font-heading font-black text-3xl md:text-5xl">
+                        {String(t.val).padStart(2, '0')}
+                      </div>
+                      <span className="text-[#fde047] text-[10px] md:text-xs font-black uppercase tracking-widest mt-2">{t.label}</span>
+                    </div>
+                    {i < arr.length - 1 && <span className="text-[#fde047] text-3xl md:text-5xl font-black mb-5 animate-pulse">:</span>}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-poster-yellow font-black text-base md:text-lg mb-2 flex items-center justify-center gap-2">
+              <AlertTriangle size={18} /> {copy.footerCta.seats}
+            </p>
+            <div className="text-veil inline-block">
+              <p className="text-white font-bold text-sm md:text-base">{copy.footerCta.price}</p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-6 mt-6">
+              <div className="ribbon-red rounded-2xl px-6 py-3 inline-flex items-center gap-2">
+                <span className="text-white font-black text-sm">केवल</span>
+                <span className="text-3xl md:text-4xl font-black text-poster-yellow">₹{pricing.offerPrice}</span>
+                <span className="text-white font-black text-sm">में</span>
+              </div>
+            </div>
 
             {settings.paymentEnabled && (
               <button onClick={handleBookNow}
-                className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gradient-to-r from-[#f37446] via-[#d6431a] to-[#f37446] text-white font-black text-base md:text-lg shadow-xl shadow-[#f37446]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+                className="btn-red pulse-cta w-full sm:w-auto px-8 md:px-12 py-5 rounded-2xl font-black text-base md:text-xl inline-flex items-center justify-center gap-3 uppercase tracking-wide">
                 {copy.footerCta.cta}
+                <ArrowRight size={24} />
               </button>
             )}
 
-            <div className="flex items-center justify-center gap-2 mt-6 text-[#cdded2] text-xs opacity-80">
-              <ShieldCheck size={14} className="text-[#ecc472]" />
-              <span>{copy.footerCta.secureText}</span>
+            {/* Secure Payment Banner */}
+            <div className="mt-8 panel-dark rounded-2xl p-5 max-w-3xl mx-auto">
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+                <span className="inline-flex items-center gap-2 bg-[#fde047] rounded-full px-4 py-2 text-[#14532d] text-xs md:text-sm font-black border-2 border-[#14532d]"><ShieldCheck size={16} /> Secure Payment</span>
+                <span className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 text-[#14532d] text-xs md:text-sm font-black border-2 border-[#fde047]"><XCircle size={16} className="text-red-600" /> No Fake Promises</span>
+                <span className="inline-flex items-center gap-2 bg-[#fde047] rounded-full px-4 py-2 text-[#14532d] text-xs md:text-sm font-black border-2 border-[#14532d]"><Lock size={16} /> Privacy Protected</span>
+              </div>
+              <p className="text-white text-xs md:text-sm font-bold">{copy.footerCta.secureText}</p>
             </div>
           </div>
         </section>
       )}
 
-      {/* Clean Modern Footer */}
-      <footer className="py-12 px-4 md:px-12 bg-[#020703] border-t border-white/5 text-center">
-        <div className="flex justify-center flex-wrap gap-x-8 gap-y-3 mb-6 max-w-4xl mx-auto">
+      {/* Footer */}
+      <footer className="py-10 px-4 md:px-12 bg-[#052e16] border-t-4 border-[#fde047]/50 text-center">
+        <div className="flex justify-center flex-wrap gap-x-8 gap-y-3 mb-5 max-w-4xl mx-auto">
           {[
-            ['Privacy Policy', '/privacy-policy'], 
-            ['Terms & Conditions', '/terms'], 
-            ['Refund Policy', '/refund-policy'], 
+            ['Privacy Policy', '/privacy-policy'],
+            ['Terms & Conditions', '/terms'],
+            ['Refund Policy', '/refund-policy'],
             ['Contact Support', '/contact']
           ].map(([label, href]) => (
-            <a key={href} href={href} className="text-[#a8c1b0] text-xs md:text-sm font-medium hover:text-[#f37446] transition-colors">{label}</a>
+            <a key={href} href={href} className="text-white text-xs md:text-sm font-bold hover:text-[#fde047] transition-colors">{label}</a>
           ))}
         </div>
-        <p className="text-[#5f7d6d] text-xs">
+        <p className="text-[#fde047]/90 text-xs font-semibold">
           © {new Date().getFullYear()} {siteSettings?.websiteName || 'Prakrit Astro'}. All rights reserved.
         </p>
       </footer>
 
       {/* Sticky Mobile Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[120] border-t border-white/10 bg-[#041109]/95 backdrop-blur-xl shadow-[0_-10px_30px_rgba(0,0,0,0.35)]">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[120] border-t-2 border-[#fde047]/60 bg-[#052e16]/98 backdrop-blur-xl shadow-[0_-10px_30px_rgba(0,0,0,0.55)]">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-3 py-2.5">
           {settings.countdownEnabled && (
-            <div className="min-w-0 flex-1 rounded-2xl border border-[#ecc472]/20 bg-white/5 px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#84a190]">
+            <div className="min-w-0 flex-1 rounded-xl border-2 border-[#fde047]/50 bg-[#064e3b] px-3 py-2">
+              <div className="text-[9px] font-black uppercase tracking-[0.18em] text-white">
                 Time Left
               </div>
-              <div className="mt-1 flex items-center gap-1 text-lg font-black text-[#ecc472]">
+              <div className="mt-0.5 flex items-center gap-1 text-lg font-black text-[#fde047]">
                 <span>{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="text-[#f37446]">:</span>
+                <span className="text-white">:</span>
                 <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="text-[#f37446]">:</span>
+                <span className="text-white">:</span>
                 <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
               </div>
             </div>
@@ -647,21 +798,21 @@ export default function LandingPage() {
           <button
             type="button"
             onClick={handleBookNow}
-            className="min-w-[168px] rounded-2xl bg-gradient-to-r from-[#f37446] to-[#d6431a] px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-[#d6431a]/30 active:scale-95 transition-transform"
+            className="btn-poster min-w-[160px] rounded-xl px-4 py-3 text-center text-sm font-black"
           >
             Book Now
-            <span className="mt-0.5 block text-[11px] font-semibold text-white/85">₹{pricing.offerPrice}/- only</span>
+            <span className="mt-0.5 block text-[11px] font-bold opacity-85">₹{pricing.offerPrice}/- only</span>
           </button>
         </div>
       </div>
 
-      {/* Floating Action WhatsApp */}
+      {/* Floating WhatsApp */}
       {settings.whatsappNumber && (
         <a href={`https://wa.me/${formatWhatsAppNumber(settings.whatsappNumber)}?text=Hello, I have a query about Prakrit Career Astro.`}
           target="_blank" rel="noreferrer"
-          className="fixed right-4 bottom-24 md:bottom-6 z-[125] w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#0e6e63] flex items-center justify-center text-white shadow-xl hover:scale-110 active:scale-90 transition-transform duration-300"
+          className="wa-pulse fixed right-4 bottom-24 md:bottom-6 z-[125] w-14 h-14 rounded-full bg-gradient-to-br from-[#22c55e] to-[#15803d] border-2 border-[#fde047] flex items-center justify-center text-white shadow-xl hover:scale-110 active:scale-90 transition-transform duration-300"
           aria-label="Contact WhatsApp">
-          <MessageCircle size={24} />
+          <MessageCircle size={26} />
         </a>
       )}
     </div>

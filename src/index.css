@@ -4,102 +4,205 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background-color: #06120a;
-    color: #f4f9f4;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.65;
+    /* Deep, rich emerald gradient with subtle constellation/geometric pattern */
+    background-color: #052e16;
+    background-image:
+      radial-gradient(1200px 600px at 10% -10%, rgba(34,197,94,0.35), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(20,83,45,0.7), transparent 60%),
+      radial-gradient(1000px 700px at 50% 110%, rgba(22,101,52,0.55), transparent 60%),
+      linear-gradient(180deg, #064e3b 0%, #052e16 50%, #064e3b 100%);
+    background-attachment: fixed;
+    color: #ffffff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: Georgia, 'Times New Roman', serif;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    font-family: 'Tiro Devanagari Hindi', Georgia, 'Times New Roman', serif;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    font-weight: 900;
   }
   a { color: inherit; text-decoration: none; }
   button, input, select, textarea { font: inherit; }
   ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: #0a1a10; }
-  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#3a7048,#1f3e29); border-radius: 999px; border: 2px solid #0a1a10; }
-  ::-webkit-scrollbar-thumb:hover { background: #ec5826; }
-  ::selection { background: #ec5826; color: #f4f9f4; }
+  ::-webkit-scrollbar-track { background: #052e16; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#facc15,#ca8a04); border-radius: 999px; border: 2px solid #052e16; }
+  ::-webkit-scrollbar-thumb:hover { background: #fde047; }
+  ::selection { background: #facc15; color: #14532d; }
 }
 
 @layer utilities {
-  /* Fraunces serif heading font */
-  .font-heading { font-family: Georgia, 'Times New Roman', serif; }
+  .font-heading { font-family: 'Tiro Devanagari Hindi', Georgia, serif; }
 
-  /* Logo text gradient clip */
+  /* Bright, fully legible yellow headline (poster style) */
+  .text-poster-yellow {
+    color: #fde047;
+    text-shadow:
+      0 1px 0 rgba(0,0,0,0.45),
+      0 2px 8px rgba(0,0,0,0.55),
+      0 0 22px rgba(253,224,71,0.35);
+  }
+  .text-poster-yellow-gradient {
+    background: linear-gradient(180deg, #fef9c3 0%, #fde047 45%, #eab308 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,0.45));
+  }
+
+  /* Readability veil — translucent dark overlay behind white text */
+  .text-veil {
+    background: rgba(5, 46, 22, 0.55);
+    backdrop-filter: blur(2px);
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: inset 0 0 0 1px rgba(253,224,71,0.18);
+  }
+
+  /* Emerald constellation backdrop overlay (subtle stars + soft grid) */
+  .constellation-bg {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(253,224,71,0.85) 0, rgba(253,224,71,0.85) 1.2px, transparent 1.6px),
+      radial-gradient(circle at 78% 28%, rgba(253,224,71,0.7) 0, rgba(253,224,71,0.7) 1px, transparent 1.4px),
+      radial-gradient(circle at 32% 72%, rgba(253,224,71,0.7) 0, rgba(253,224,71,0.7) 1px, transparent 1.4px),
+      radial-gradient(circle at 88% 82%, rgba(253,224,71,0.7) 0, rgba(253,224,71,0.7) 1.2px, transparent 1.6px),
+      radial-gradient(circle at 55% 12%, rgba(253,224,71,0.5) 0, rgba(253,224,71,0.5) 1px, transparent 1.4px),
+      radial-gradient(circle at 65% 88%, rgba(253,224,71,0.6) 0, rgba(253,224,71,0.6) 1px, transparent 1.4px),
+      linear-gradient(180deg, rgba(6,78,59,0.55), rgba(5,46,22,0.85));
+  }
+
   .logo-gradient {
-    background: linear-gradient(135deg, #ecc472, #ec5826);
+    background: linear-gradient(135deg, #fde047, #facc15);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  /* Section title gold underline (::after pseudo) */
+  /* Dark emerald panel card (poster style) */
+  .panel-dark {
+    background: linear-gradient(160deg, #064e3b, #052e16);
+    border: 2px solid #166534;
+    box-shadow: 0 10px 26px -8px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(250,204,21,0.22);
+  }
+
+  .panel-light {
+    background: #fefce8;
+    border: 2px solid #fde047;
+    color: #14532d;
+    box-shadow: 0 10px 28px -10px rgba(0,0,0,0.45);
+  }
+
+  /* Big yellow CTA button (poster style) */
+  .btn-poster {
+    background: linear-gradient(180deg, #fde047 0%, #facc15 50%, #ca8a04 100%);
+    color: #7f1d1d;
+    border: 3px solid #fef08a;
+    box-shadow: 0 6px 0 #854d0e, 0 14px 30px -6px rgba(0,0,0,0.55);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+  }
+  .btn-poster:active { transform: translateY(3px); box-shadow: 0 3px 0 #854d0e, 0 6px 14px -4px rgba(0,0,0,0.5); }
+
+  .btn-red {
+    background: linear-gradient(180deg, #ef4444, #b91c1c);
+    color: #ffffff;
+    border: 3px solid #fde047;
+    box-shadow: 0 6px 0 #7f1d1d, 0 12px 28px -6px rgba(0,0,0,0.6);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+  .btn-red:active { transform: translateY(3px); box-shadow: 0 3px 0 #7f1d1d, 0 6px 12px -4px rgba(0,0,0,0.5); }
+
+  /* Red price ribbon */
+  .ribbon-red {
+    background: linear-gradient(180deg, #dc2626, #991b1b);
+    color: #ffffff;
+    border: 3px dashed #fde047;
+    box-shadow: 0 8px 22px -6px rgba(0,0,0,0.55);
+  }
+
   .section-title-line::after {
-    content: '';
+    content: '✦';
     display: block;
-    width: 72px;
-    height: 4px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #f37446, #d6431a);
-    margin: 18px auto 0;
-    box-shadow: 0 0 18px rgba(236, 88, 38, 0.55);
+    text-align: center;
+    color: #fde047;
+    font-size: 18px;
+    margin-top: 12px;
+    text-shadow: 0 0 14px rgba(253,224,71,0.7);
   }
 
-  /* Countdown number card */
-  .time-card {
-    background: linear-gradient(160deg, #173524, #0e2216);
-    border: 1px solid rgba(168, 193, 176, 0.14);
-    box-shadow: 0 8px 22px -6px rgba(0, 0, 0, 0.55);
-  }
-
-  /* Mentor photo ring glow */
   .mentor-ring {
-    border: 4px solid #122a1c;
-    box-shadow: 0 22px 50px -16px rgba(0,0,0,.7), 0 0 0 4px rgba(236,88,38,.35), 0 0 40px rgba(236,88,38,.25);
+    border: 6px solid #fde047;
+    box-shadow: 0 0 0 4px #052e16, 0 22px 50px -16px rgba(0,0,0,.65), 0 0 70px rgba(253,224,71,.4);
   }
 
-  /* CTA button ripple on hover */
-  .ripple-btn::before {
+  .time-card {
+    background: linear-gradient(180deg, #fefce8, #fde047);
+    color: #14532d;
+    border: 3px solid #166534;
+    box-shadow: 0 6px 0 #166534, 0 12px 22px -6px rgba(0,0,0,0.5);
+  }
+
+  /* Numbered mistake card stripe */
+  .mistake-card {
+    background: linear-gradient(120deg, #064e3b 0%, #052e16 50%, #14532d 100%);
+    border: 2px solid #166534;
+    box-shadow: 0 14px 30px -10px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(253,224,71,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .mistake-card::before {
     content: '';
     position: absolute;
-    top: 50%; left: 50%;
-    width: 0; height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.28);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    inset: 0;
+    background: radial-gradient(circle at 100% 0%, rgba(253,224,71,0.10), transparent 50%);
+    pointer-events: none;
   }
-  .ripple-btn:hover::before { width: 360px; height: 360px; }
+  .num-circle {
+    background: linear-gradient(180deg, #fde047, #ca8a04);
+    border: 4px solid #052e16;
+    color: #14532d;
+    box-shadow: 0 0 0 3px #fde047, 0 8px 18px rgba(0,0,0,0.45);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+  }
 
-  /* Floating WhatsApp button ring pulse */
+  /* Yellow bullet point */
+  .y-bullet {
+    width: 12px; height: 12px; flex-shrink: 0;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, #fde047, #ca8a04);
+    border: 2px solid #14532d;
+    box-shadow: 0 0 10px rgba(253,224,71,0.55);
+    margin-top: 9px;
+  }
+
+  /* Floating WhatsApp pulse */
   .wa-pulse::after {
     content: '';
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 2px solid rgba(37, 211, 102, 0.45);
+    border: 2px solid rgba(253, 224, 71, 0.6);
     animation: ringPulse 2.2s ease-out infinite;
   }
   @keyframes ringPulse {
-    0%   { transform: scale(0.9); opacity: 0.85; }
-    100% { transform: scale(1.4); opacity: 0; }
+    0%   { transform: scale(0.9); opacity: 0.9; }
+    100% { transform: scale(1.5); opacity: 0; }
   }
-
-  /* CTA pulse breathing */
   @keyframes pulseCta {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.95; transform: scale(1.02); }
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.03); }
   }
-  .pulse-cta { animation: pulseCta 2s infinite; }
+  .pulse-cta { animation: pulseCta 1.8s ease-in-out infinite; }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  .animate-spin-slow { animation: spinSlow 28s linear infinite; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fade-in { animation: fadeIn 0.35s ease-out both; }
 
-  /* Hero aurora orb drift */
-  @keyframes auroraDrift {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.9; }
-    50%       { transform: translate(20px, -10px) scale(1.06); opacity: 1; }
+  /* Glow halo behind hero zodiac image */
+  .hero-glow {
+    background:
+      radial-gradient(circle at 50% 50%, rgba(253,224,71,0.55) 0%, rgba(253,224,71,0.18) 35%, transparent 65%);
+    filter: blur(8px);
   }
-  .aurora-drift { animation: auroraDrift 12s ease-in-out infinite; }
 }
