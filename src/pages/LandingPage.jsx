@@ -393,7 +393,7 @@ export default function LandingPage() {
                 className="hero-boy-cutout"
                 width={372}
                 height={628}
-                fetchpriority="high"
+                fetchPriority="high"
               />
             </div>
           </div>
