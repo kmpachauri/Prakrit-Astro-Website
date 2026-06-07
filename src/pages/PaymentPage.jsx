@@ -1,23 +1,39 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, ShieldCheck, ChevronDown, X } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldCheck, ChevronDown, X, User, Phone, Mail, MapPin, GraduationCap, MessageSquare, Lock, IndianRupee } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const copy = {
-  title: 'Prakrit Career Boost Booking',
-  subtitle: 'नीचे parent details fill karein. Payment ke baad WhatsApp group join link milega.',
+  title: 'Secure Your Child Career Guidance Seat',
+  subtitle: 'Parent details fill karein. Payment ke baad confirmation aur WhatsApp group link mil jayega.',
   name: 'Parent Name / माता-पिता का नाम',
   mobile: 'Mobile Number',
   email: 'Email',
   careerCategory: 'Student Class / Class',
   notes: 'Child ke career/stream concern',
-  pay: 'Secure Payment Karein',
+  pay: 'Pay Securely',
   secured: 'Razorpay secure checkout',
   back: 'Back'
 };
 
 const categoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
+const placeholders = {
+  name: 'Example: Rajesh Sharma',
+  mobile: '10 digit mobile number',
+  email: 'example@email.com',
+  state: 'Select your state',
+  careerCategory: 'Select class or concern',
+  notes: 'Example: Child is confused between Science and Commerce...'
+};
+const fieldIcons = {
+  name: User,
+  mobile: Phone,
+  email: Mail,
+  state: MapPin,
+  careerCategory: GraduationCap,
+  notes: MessageSquare
+};
 
 const INDIA_STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
@@ -29,7 +45,7 @@ const INDIA_STATES = [
   'Lakshadweep','Puducherry'
 ];
 
-function StateDropdown({ value, onChange, required, inputCls, labelCls }) {
+function StateDropdown({ value, onChange, inputCls, placeholder = 'Select State' }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef(null);
@@ -46,9 +62,9 @@ function StateDropdown({ value, onChange, required, inputCls, labelCls }) {
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className={`${inputCls} flex items-center justify-between text-left`}
+        className={`${inputCls} flex items-center justify-between gap-3 text-left`}
       >
-        <span className={value ? 'text-[#14532d]' : 'text-[#166534]/70'}>{value || 'Select State'}</span>
+        <span className={value ? 'text-[#14532d]' : 'text-[#166534]/60'}>{value || placeholder}</span>
         <ChevronDown size={16} className={`text-[#166534] transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
@@ -99,7 +115,14 @@ const defaultFormFields = {
 function loadRazorpayScript() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
+    const existingScript = document.getElementById('razorpay-checkout-js');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(true), { once: true });
+      existingScript.addEventListener('error', () => resolve(false), { once: true });
+      return;
+    }
     const script = document.createElement('script');
+    script.id = 'razorpay-checkout-js';
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
@@ -124,6 +147,7 @@ export default function PaymentPage() {
   }, []);
 
   const amount = landingPage?.pricing?.offerPrice || 0;
+  const originalAmount = landingPage?.pricing?.originalPrice;
   const savedFormFields = landingPage?.settings?.formFields || {};
   const formFields = Object.fromEntries(
     Object.entries(defaultFormFields).map(([field, config]) => [field, { ...config, ...(savedFormFields[field] || {}) }])
@@ -143,6 +167,7 @@ export default function PaymentPage() {
       });
       const order = await res.json();
       if (!res.ok) throw new Error(order.message || 'Payment order failed.');
+      if (!order.keyId) throw new Error('Razorpay key is missing. Please configure backend Razorpay credentials.');
       const loaded = await loadRazorpayScript();
       if (!loaded || !window.Razorpay) throw new Error('Unable to load Razorpay.');
       const markFailed = async (rawResponse = {}, reason = 'checkout_failed') => {
@@ -199,96 +224,170 @@ export default function PaymentPage() {
     );
   }
 
-  const inputCls = "w-full border-2 border-[#fde047]/80 rounded-xl bg-[#fefce8] text-[#14532d] px-4 py-4 outline-none transition placeholder-[#166534]/60 text-base font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_22px_-18px_rgba(0,0,0,0.72)] focus:border-[#fef08a] focus:bg-[#fffde7] focus:shadow-[0_0_0_4px_rgba(253,224,71,0.18),0_14px_26px_-18px_rgba(0,0,0,0.78)]";
-  const labelCls = "block text-[#fef9c3] font-black text-base md:text-lg mb-2.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]";
+  const inputCls = "w-full min-h-[56px] border-2 border-[#fde047]/70 rounded-xl bg-[#fefce8] text-[#14532d] px-4 py-3.5 outline-none transition placeholder-[#166534]/55 text-base font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_22px_-18px_rgba(0,0,0,0.72)] focus:border-[#fef08a] focus:bg-[#fffde7] focus:shadow-[0_0_0_4px_rgba(253,224,71,0.2),0_14px_26px_-18px_rgba(0,0,0,0.78)]";
+  const labelCls = "block text-[#fef9c3] font-black text-sm md:text-base mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]";
+  const RequiredMark = ({ show }) => show ? <span className="text-[#fde047]"> *</span> : null;
+  const FieldIcon = ({ field }) => {
+    const Icon = fieldIcons[field];
+    return Icon ? (
+      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#166534]/75">
+        <Icon size={18} />
+      </span>
+    ) : null;
+  };
 
   return (
-    <main className="app-green-page min-h-screen px-5 md:px-10 py-10 md:py-20">
-      <div className="w-full max-w-3xl mx-auto">
-        <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full border-2 border-[#fde047]/60 bg-[#052e16]/80 text-[#fde047] font-black text-sm hover:bg-[#fde047] hover:text-[#14532d] transition-all duration-200">
+    <main className="app-green-page min-h-screen px-4 md:px-10 py-8 md:py-16">
+      <div className="w-full max-w-5xl mx-auto">
+        <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border-2 border-[#fde047]/60 bg-[#052e16]/80 text-[#fde047] font-black text-sm hover:bg-[#fde047] hover:text-[#14532d] transition-all duration-200">
           <ArrowLeft size={15} /> Back to Home
         </button>
 
-        <div className="text-center mb-9">
-          <h2 className="font-heading font-extrabold text-[clamp(1.85rem,3vw,2.8rem)] text-white">{copy.title}</h2>
-          <p className="text-[#cdded2] mt-2">{copy.subtitle}</p>
-        </div>
-
-        <div className="app-green-panel flex items-center justify-between flex-wrap gap-4 p-6 rounded-2xl mb-6 backdrop-blur-xl">
-          <div>
-            <h5 className="font-bold text-white">{landingPage?.name || 'Prakrit Career Boost'}</h5>
-            <p className="text-[#cdded2] text-sm">Payment ke baad WhatsApp group join link milega.</p>
+        <div className="text-center mb-7">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#fde047]/45 bg-[#052e16]/70 px-4 py-2 text-xs font-black uppercase tracking-wide text-[#fde047]">
+            <Lock size={14} /> Secure Booking
           </div>
-          <span className="font-heading font-black text-[2.1rem] text-[#ecc472] drop-shadow-[0_2px_14px_rgba(217,168,74,.35)]">₹{amount}</span>
+          <h2 className="font-heading font-extrabold text-[clamp(1.85rem,5vw,3rem)] text-white mt-4 leading-tight">{copy.title}</h2>
+          <p className="text-[#fef9c3]/85 mt-2 max-w-2xl mx-auto text-sm md:text-base">{copy.subtitle}</p>
         </div>
 
-        {error && <div className="rounded-xl border border-red-500 bg-[rgba(255,93,101,.12)] text-red-300 px-4 py-3 mb-5 text-sm">{error}</div>}
-
-        <form onSubmit={submit}>
-          {[
-            { field: 'name', type: 'text' },
-            { field: 'email', type: 'email' },
-          ].filter(({ field }) => formFields[field]?.visible !== false).map(({ field, type }) => (
-            <div key={field} className="mb-5">
-              <label className={labelCls}>{formFields[field]?.label || copy[field]}</label>
-              <input className={inputCls} type={type} required={formFields[field]?.required} value={form[field]} onChange={e => update(field, e.target.value)} />
+        <div className="grid grid-cols-1 lg:grid-cols-[0.82fr_1.18fr] gap-6 items-start">
+          <aside className="app-green-panel rounded-2xl p-5 md:p-6 backdrop-blur-xl lg:sticky lg:top-6">
+            <div className="rounded-2xl bg-gradient-to-br from-[#fef9c3] to-[#facc15] p-5 text-[#14532d] shadow-[0_10px_0_#854d0e,0_22px_40px_-24px_rgba(0,0,0,0.75)]">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-black uppercase tracking-wide">Today Offer</span>
+                <ShieldCheck size={22} />
+              </div>
+              <div className="mt-4 flex items-end gap-2">
+                <IndianRupee size={30} className="mb-2" />
+                <span className="font-heading text-6xl font-black leading-none">{amount}</span>
+                {originalAmount && <span className="mb-2 text-sm font-black line-through opacity-70">₹{originalAmount}</span>}
+              </div>
+              <p className="mt-3 text-sm font-extrabold">1 hour live online masterclass booking</p>
             </div>
-          ))}
 
-          {formFields.mobile?.visible !== false && (
-            <div className="mb-5">
-              <label className={labelCls}>{formFields.mobile?.label || copy.mobile}</label>
-              <div className="flex gap-2">
-                <div className="flex items-center justify-center rounded-xl border-2 border-[#fde047]/80 bg-[#fefce8] px-3 text-[#14532d] font-black text-base select-none whitespace-nowrap">
-                  +91
-                </div>
-                <input
-                  className={inputCls}
-                  type="tel"
-                  required={formFields.mobile?.required}
-                  maxLength={10}
-                  value={form.mobile}
-                  onChange={e => update('mobile', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                />
+            <div className="mt-6">
+              <h5 className="font-heading text-2xl font-black text-[#fde047]">{landingPage?.name || 'Prakrit Career Boost'}</h5>
+              <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85">Details carefully fill karein. Isi number par confirmation aur WhatsApp group details share hongi.</p>
+            </div>
+
+            <div className="mt-5 grid gap-3 text-sm font-bold text-[#fef9c3]">
+              <div className="flex items-center gap-3 rounded-xl border border-[#fde047]/30 bg-[#052e16]/45 px-4 py-3">
+                <ShieldCheck size={18} className="text-[#fde047]" /> Secure Razorpay checkout
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-[#fde047]/30 bg-[#052e16]/45 px-4 py-3">
+                <MessageSquare size={18} className="text-[#fde047]" /> WhatsApp confirmation after payment
               </div>
             </div>
-          )}
+          </aside>
 
-          <div className="mb-5">
-            <label className={labelCls}>State / राज्य <span className="text-[#f37446]">*</span></label>
-            <StateDropdown
-              value={form.state}
-              onChange={v => update('state', v)}
-              required
-              inputCls={inputCls}
-              labelCls={labelCls}
-            />
-          </div>
-
-          {formFields.careerCategory?.visible !== false && (
-            <div className="mb-5">
-              <label className={labelCls}>{formFields.careerCategory?.label || copy.careerCategory}</label>
-              <select className={`${inputCls} payment-select`} required={formFields.careerCategory?.required} value={form.careerCategory} onChange={e => update('careerCategory', e.target.value)}>
-                {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          )}
-
-          {formFields.notes?.visible !== false && (
+          <div className="app-green-panel rounded-2xl p-5 md:p-7 backdrop-blur-xl">
             <div className="mb-6">
-              <label className={labelCls}>{formFields.notes?.label || copy.notes}</label>
-              <textarea className={inputCls} rows={4} required={formFields.notes?.required} value={form.notes} onChange={e => update('notes', e.target.value)} />
+              <h3 className="font-heading text-2xl md:text-3xl font-black text-white">Booking Details</h3>
+              <p className="mt-1 text-sm font-semibold text-[#fef9c3]/80">All required fields marked with *.</p>
             </div>
-          )}
 
-          <button type="submit" disabled={submitting} className="ripple-btn relative overflow-hidden w-full min-h-[60px] rounded-[14px] bg-gradient-to-br from-[#f37446] to-[#d6431a] text-white font-extrabold text-lg shadow-[0_16px_44px_-12px_rgba(236,88,38,.65)] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
-            {submitting ? 'Please wait...' : `${copy.pay} ₹${amount}`}
-          </button>
-        </form>
+            {error && <div className="rounded-xl border border-red-400 bg-[rgba(255,93,101,.14)] text-red-100 px-4 py-3 mb-5 text-sm font-bold">{error}</div>}
 
-        <div className="flex items-center justify-center gap-2 mt-5 text-[#cdded2] text-sm">
-          <ShieldCheck size={14} className="text-[#ecc472]" />
-          <span>{copy.secured}</span>
+            <form onSubmit={submit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                {[{ field: 'name', type: 'text' }, { field: 'email', type: 'email' }]
+                  .filter(({ field }) => formFields[field]?.visible !== false)
+                  .map(({ field, type }) => (
+                    <div key={field} className="mb-5">
+                      <label className={labelCls}>
+                        {formFields[field]?.label || copy[field]}<RequiredMark show={formFields[field]?.required} />
+                      </label>
+                      <div className="relative">
+                        <FieldIcon field={field} />
+                        <input
+                          className={`${inputCls} pl-11`}
+                          type={type}
+                          required={formFields[field]?.required}
+                          placeholder={placeholders[field]}
+                          value={form[field]}
+                          onChange={e => update(field, e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                {formFields.mobile?.visible !== false && (
+                  <div className="mb-5">
+                    <label className={labelCls}>{formFields.mobile?.label || copy.mobile}<RequiredMark show={formFields.mobile?.required} /></label>
+                    <div className="flex gap-2">
+                      <div className="flex min-h-[56px] items-center justify-center rounded-xl border-2 border-[#fde047]/70 bg-[#fefce8] px-3 text-[#14532d] font-black text-base select-none whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                        +91
+                      </div>
+                      <div className="relative flex-1">
+                        <FieldIcon field="mobile" />
+                        <input
+                          className={`${inputCls} pl-11`}
+                          type="tel"
+                          required={formFields.mobile?.required}
+                          maxLength={10}
+                          placeholder={placeholders.mobile}
+                          value={form.mobile}
+                          onChange={e => update('mobile', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-5">
+                  <label className={labelCls}>State / राज्य <span className="text-[#fde047]">*</span></label>
+                  <div className="relative">
+                    <FieldIcon field="state" />
+                    <StateDropdown
+                      value={form.state}
+                      onChange={v => update('state', v)}
+                      inputCls={`${inputCls} pl-11`}
+                      placeholder={placeholders.state}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {formFields.careerCategory?.visible !== false && (
+                <div className="mb-5">
+                  <label className={labelCls}>{formFields.careerCategory?.label || copy.careerCategory}<RequiredMark show={formFields.careerCategory?.required} /></label>
+                  <div className="relative">
+                    <FieldIcon field="careerCategory" />
+                    <select className={`${inputCls} payment-select pl-11`} required={formFields.careerCategory?.required} value={form.careerCategory} onChange={e => update('careerCategory', e.target.value)}>
+                      {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {formFields.notes?.visible !== false && (
+                <div className="mb-6">
+                  <label className={labelCls}>{formFields.notes?.label || copy.notes}<RequiredMark show={formFields.notes?.required} /></label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-4 text-[#166534]/75"><MessageSquare size={18} /></span>
+                    <textarea
+                      className={`${inputCls} min-h-[118px] resize-none pl-11`}
+                      rows={4}
+                      required={formFields.notes?.required}
+                      placeholder={placeholders.notes}
+                      value={form.notes}
+                      onChange={e => update('notes', e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <button type="submit" disabled={submitting} className="ripple-btn relative flex w-full min-h-[62px] items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-[#ff5252] via-[#ef4444] to-[#b91c1c] px-5 text-white font-black text-lg shadow-[inset_0_2px_0_rgba(255,255,255,0.28),0_7px_0_#7f1d1d,0_20px_40px_-16px_rgba(0,0,0,0.78)] border-2 border-[#fef08a] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                {submitting ? <><Loader2 className="animate-spin" size={20} /> Please wait...</> : <>{copy.pay} ₹{amount} <Lock size={19} /></>}
+              </button>
+            </form>
+
+            <div className="flex items-center justify-center gap-2 mt-5 text-[#fef9c3]/85 text-sm font-semibold">
+              <ShieldCheck size={15} className="text-[#fde047]" />
+              <span>{copy.secured}</span>
+            </div>
+          </div>
         </div>
       </div>
     </main>

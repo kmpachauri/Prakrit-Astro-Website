@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -11,7 +12,7 @@
       linear-gradient(180deg, #02a51d 0%, #008616 48%, #02a51d 100%);
     background-attachment: fixed;
     color: #ffffff;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Inter', 'Poppins', sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -193,11 +194,23 @@
   .mistake-section-title {
     color: #ffffff;
     font-family: 'Tiro Devanagari Hindi', Georgia, serif;
-    font-size: clamp(2.2rem, 5.8vw, 5.1rem);
+    font-size: clamp(1.5rem, 4vw, 3.4rem);
     font-weight: 1000;
     line-height: 1.16;
     letter-spacing: 0;
     text-shadow: 0 3px 0 rgba(0,0,0,0.62), 0 10px 24px rgba(0,0,0,0.5);
+  }
+
+  .hero-section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+  }
+
+  .hero-section .poster-composite {
+    width: 100%;
+    align-items: center;
   }
 
   .poster-composite {
@@ -209,8 +222,6 @@
   }
 
   .poster-composite-reverse { grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.08fr); }
-
-  .poster-copy-panel { position: relative; z-index: 2; text-align: center; padding: clamp(8px, 1.5vw, 18px); }
 
   .poster-copy-kicker {
     display: inline-flex;
@@ -237,20 +248,20 @@
     margin: 0 auto;
     color: #fde047;
     font-family: 'Tiro Devanagari Hindi', Georgia, serif;
-    font-size: clamp(1.7rem, 5.5vw, 4.2rem);
+    font-size: clamp(1.2rem, 3vw, 2.5rem);
     font-weight: 1000;
-    line-height: 1.16;
-    text-shadow: 0 3px 0 rgba(0, 0, 0, 0.72), 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 28px rgba(253, 224, 71, 0.3);
+    line-height: 1.25;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.72), 0 5px 12px rgba(0, 0, 0, 0.55), 0 0 28px rgba(253, 224, 71, 0.3);
   }
 
   .poster-copy-lead {
     max-width: 820px;
-    margin: 16px auto 0;
+    margin: 12px auto 0;
     color: #ffffff;
-    font-size: clamp(1rem, 2.6vw, 1.35rem);
-    font-weight: 800;
+    font-size: clamp(0.9rem, 1.8vw, 1.12rem);
+    font-weight: 600;
     line-height: 1.5;
-    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
   }
 
   .poster-copy-meta {
@@ -347,17 +358,20 @@
   .poster-image-frame { position: relative; z-index: 1; }
 
   .poster-image-frame-hero {
-    min-height: clamp(420px, 50vw, 640px);
+    height: calc(100vh - 100px);
+    max-height: 680px;
+    min-height: 360px;
     display: flex;
     align-items: center;
     justify-content: center;
+ 
   }
 
   .hero-stage {
     position: relative;
     width: 100%;
-    max-width: 700px;
-    aspect-ratio: 4/5;
+    height: 100%;
+    max-width: 600px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -375,10 +389,10 @@
   .hero-zodiac-sign {
     position: absolute;
     z-index: 0;
-    width: min(110%, 640px);
+    width: min(68%, 380px);
     height: auto;
     left: 50%;
-    top: 38%;
+    top: 46%;
     transform: translate(-50%, -50%);
     opacity: 0.85;
     pointer-events: none;
@@ -389,8 +403,9 @@
   .hero-boy-cutout {
     position: relative;
     z-index: 2;
-    width: min(100%, 580px);
-    height: auto;
+    width: auto;
+    height: 82%;
+    max-height: 82%;
     object-fit: contain;
     object-position: bottom center;
     filter: saturate(1.08) contrast(1.04) drop-shadow(0 30px 28px rgba(0,0,0,0.4));
@@ -409,7 +424,7 @@
 
   .poster-image-frame-career {
     overflow: visible;
-    min-height: clamp(620px, 62vw, 820px);
+    min-height: clamp(420px, 45vw, 620px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -417,8 +432,8 @@
 
   .career-composite-stage {
     position: relative;
-    width: min(112%, 820px);
-    height: clamp(620px, 62vw, 820px);
+    width: min(100%, 680px);
+    height: clamp(420px, 45vw, 620px);
     margin-inline: auto;
   }
 
@@ -496,7 +511,7 @@
 
   .mini-poster-copy h3 {
     color: #fde047;
-    font-size: clamp(1.4rem, 2.8vw, 2rem);
+    font-size: clamp(1.1rem, 2.2vw, 1.75rem);
     line-height: 1.18;
     text-shadow: 0 3px 7px rgba(0,0,0,0.7);
   }
@@ -784,16 +799,34 @@
   }
 
   .testimonial-card {
-    background: linear-gradient(180deg, #fefce8, #fef3c7);
-    border: 3px solid #fde047;
-    border-radius: 22px;
-    padding: 24px 26px;
-    color: #14532d;
-    box-shadow: 0 6px 0 #ca8a04, 0 22px 40px -16px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease;
+    background: linear-gradient(145deg, rgba(3,112,31,0.85), rgba(0,96,20,0.95));
+    border: 2px solid rgba(253,224,71,0.55);
+    border-radius: 24px;
+    padding: 22px 24px;
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 0 rgba(0,60,10,0.6), 0 20px 40px -16px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
   }
 
-  .testimonial-card:hover { transform: translateY(-3px); }
+  .testimonial-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    font-size: 90px;
+    line-height: 1;
+    color: rgba(253,224,71,0.18);
+    font-family: Georgia, serif;
+    pointer-events: none;
+  }
+
+  .testimonial-card:hover { transform: translateY(-4px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 0 rgba(0,60,10,0.6), 0 28px 48px -16px rgba(0,0,0,0.6); }
 
   .faq-card {
     border-radius: 18px;
@@ -881,7 +914,7 @@
 
   .final-headline {
     font-family: 'Tiro Devanagari Hindi', Georgia, serif;
-    font-size: clamp(2rem, 6vw, 4.2rem);
+    font-size: clamp(1.5rem, 4.5vw, 4.2rem);
     font-weight: 1000;
     color: #fde047;
     line-height: 1.05;
@@ -1172,6 +1205,7 @@
   }
 
   @keyframes ringPulse { 0% { transform: scale(0.9); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
+  @keyframes testimonialScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
   @keyframes pulseCta { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
   @keyframes spinSlow { to { transform: rotate(360deg); } }
   @keyframes zodiacSpin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -1205,18 +1239,18 @@
     .poster-composite-reverse .poster-image-frame-career,
     .final-invite-imgwrap { order: -1; }
 
-    .poster-image-frame-hero { min-height: 460px; }
-    .hero-stage { max-width: 420px; aspect-ratio: 3/4; }
-    .hero-zodiac-sign { width: min(118%, 540px); top: 36%; }
-    .hero-boy-cutout { width: min(82%, 360px); }
+    .poster-image-frame-hero { height: clamp(380px, 52vw, 560px); min-height: 0; max-height: none; }
+    .hero-stage { max-width: 420px; height: 100%; }
+    .hero-zodiac-sign { width: min(85%, 420px); top: 44%; }
+    .hero-boy-cutout { width: auto; height: 100%; max-width: 380px; }
     .poster-image-frame-career {
-      min-height: clamp(560px, 80vw, 700px);
+      min-height: clamp(380px, 55vw, 520px);
       align-items: center;
-      margin-bottom: clamp(28px, 6vw, 54px);
+      margin-bottom: clamp(16px, 4vw, 32px);
     }
     .career-composite-stage {
-      width: min(100%, 640px);
-      height: clamp(560px, 80vw, 700px);
+      width: min(100%, 520px);
+      height: clamp(380px, 55vw, 520px);
     }
     .career-thoughts-overlay { width: min(112%, 620px); top: -13%; }
     .career-parent-image { width: min(78%, 460px); top: 45%; transform: translate(-55%, -34%); }
@@ -1269,7 +1303,7 @@
 
   @media (max-width: 640px) {
     .scroll-pin-section {
-      min-height: 112vh;
+      min-height: auto;
     }
 
     .career-direction-section {
@@ -1287,12 +1321,21 @@
       margin-bottom: 30px;
     }
 
+    .career-direction-section .poster-image-frame-career {
+      position: relative;
+      top: auto;
+      z-index: 1;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
     .scroll-pin-section .poster-copy-panel {
+      position: relative;
       z-index: 3;
       margin-top: 0;
       border-radius: 22px;
-      background: linear-gradient(180deg, rgba(0,96,20,0.28), rgba(0,96,20,0.08));
-      backdrop-filter: blur(1px);
+      background: linear-gradient(180deg, rgba(0,96,20,0.86), rgba(5,46,22,0.74));
+      backdrop-filter: blur(2px);
     }
 
     .poster-copy-title {
@@ -1303,29 +1346,51 @@
       line-height: inherit;
     }
 
-    .poster-image-frame-hero { min-height: 380px; }
-    .hero-stage { max-width: 320px; }
-    .hero-boy-cutout { width: min(80%, 280px); }
-    .hero-zodiac-sign { width: min(125%, 460px); top: 36%; }
+    .hero-section {
+      min-height: calc(100svh - 80px);
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
 
-    .poster-image-frame-career,
-    .poster-image-frame-workshop { min-height: 0; }
+    .hero-section .poster-composite {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .poster-image-frame-hero {
+      height: 44vmax;
+      min-height: 260px;
+      max-height: 360px;
+      position: relative;
+      top: auto;
+      margin-bottom: 0;
+    }
+
+    .hero-stage {
+      max-width: 280px;
+      height: 100%;
+    }
+
+    .hero-boy-cutout { width: auto; height: 100%; max-width: 260px; }
+    .hero-zodiac-sign { width: min(90%, 300px); top: 46%; }
+
     .poster-image-frame-career {
+      min-height: 0;
+      height: clamp(220px, 58vw, 320px);
       border-radius: 24px;
       padding: 0;
-      margin-top: -6px;
-      margin-bottom: 36px;
+      margin-top: 0;
       background: radial-gradient(circle at 50% 15%, rgba(253,224,71,0.12), transparent 48%);
     }
     .career-composite-stage {
-      width: min(100%, 430px);
-      height: 520px;
+      width: min(94%, 320px);
+      height: clamp(220px, 58vw, 320px);
     }
     .career-thoughts-overlay {
-      width: min(116%, 460px);
-      top: -2%;
+      width: min(100%, 330px);
+      top: 0;
     }
-    .career-parent-image { width: min(88%, 370px); top: 43%; transform: translate(-50%, -34%); }
+    .career-parent-image { width: min(74%, 250px); top: 46%; transform: translate(-50%, -34%); }
     .section-visual { max-height: 500px; }
 
     .poster-action-bar {

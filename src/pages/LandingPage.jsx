@@ -115,9 +115,9 @@ const PAGE_COPY = {
   },
   footer: {
     links: [
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms & Conditions', href: '/terms' },
-      { label: 'Refund Policy', href: '/refund-policy' },
+      // { label: 'Privacy Policy', href: '/privacy-policy' },
+      // { label: 'Terms & Conditions', href: '/terms' },
+      // { label: 'Refund Policy', href: '/refund-policy' },
       { label: 'Contact Support', href: '/contact' }
     ],
     copyrightName: 'Prakrit Astro'
@@ -362,7 +362,7 @@ export default function LandingPage() {
       </header>
 
       {/* ===== HERO ===== */}
-      <section className="scroll-pin-section relative px-4 md:px-12 py-10 md:py-20 constellation-bg overflow-visible">
+      <section className="scroll-pin-section relative px-4 md:px-12 pt-0 pb-2 constellation-bg overflow-visible">
         <div className="poster-composite max-w-7xl mx-auto">
           <div className="poster-copy-panel">
             <div className="poster-copy-kicker">{copy.hero.question}</div>
@@ -372,14 +372,28 @@ export default function LandingPage() {
               <span><Calendar size={18} /> {copy.hero.masterclassTag}</span>
             </div>
             {settings.paymentEnabled && (
-              <div className="poster-action-bar animate-entrance-hero">
-                <div className="poster-price-pill">
-                  <span>सीट बुक करें</span>
-                  <PriceDisplay offerPrice={pricing.offerPrice} originalPrice={pricing.originalPrice} />
+              <div className="animate-entrance-hero mt-6 w-full max-w-lg mx-auto">
+                {/* Price row */}
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <span className="text-white/70 font-bold text-sm line-through decoration-red-400">₹{pricing.originalPrice}</span>
+                  <span className="bg-[#dc2626] text-white text-xs font-black px-2 py-0.5 rounded-full tracking-wide">सीमित ऑफर</span>
+                  <span className="text-[#fde047] font-black text-3xl" style={{textShadow:'0 2px 8px rgba(0,0,0,0.5)'}}>₹{pricing.offerPrice}/-</span>
                 </div>
-                <button onClick={handleBookNow} className="poster-red-button">
-                  {copy.hero.ctaText} <ArrowRight size={22} />
+                {/* CTA Button */}
+                <button
+                  onClick={handleBookNow}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-black text-white text-base uppercase tracking-wide"
+                  style={{
+                    background: 'linear-gradient(180deg,#ff5252 0%,#ef4444 40%,#b91c1c 100%)',
+                    border: '3px solid #fef08a',
+                    boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.3), 0 6px 0 #7f1d1d, 0 16px 28px -8px rgba(0,0,0,0.65)',
+                    textShadow: '0 2px 0 rgba(0,0,0,0.35)',
+                    animation: 'pulseCta 1.9s ease-in-out infinite'
+                  }}
+                >
+                  {copy.hero.ctaText} <ArrowRight size={20} />
                 </button>
+              
               </div>
             )}
           </div>
@@ -401,7 +415,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== Why sahi career disha ===== */}
-      <section className="scroll-pin-section career-direction-section py-14 md:py-20 px-4 md:px-12">
+      <section className="scroll-pin-section career-direction-section py-6 md:py-14 px-4 md:px-12">
         <div className="poster-composite poster-composite-reverse max-w-7xl mx-auto">
           <div className="poster-image-frame poster-image-frame-career">
             <div className="career-composite-stage">
@@ -426,14 +440,26 @@ export default function LandingPage() {
               ))}
             </ul>
             {settings.paymentEnabled && (
-              <div className="poster-action-bar animate-entrance">
-                <div className="poster-price-pill">
-                  <span>{copy.careerDirection.priceLabel}</span>
-                  <PriceDisplay offerPrice={pricing.offerPrice} originalPrice={pricing.originalPrice} />
+              <div className="animate-entrance mt-6 w-full max-w-lg mx-auto">
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <span className="text-white/70 font-bold text-sm line-through decoration-red-400">₹{pricing.originalPrice}</span>
+                  <span className="bg-[#dc2626] text-white text-xs font-black px-2 py-0.5 rounded-full tracking-wide">{copy.careerDirection.priceLabel}</span>
+                  <span className="text-[#fde047] font-black text-3xl" style={{textShadow:'0 2px 8px rgba(0,0,0,0.5)'}}>₹{pricing.offerPrice}/-</span>
                 </div>
-                <button onClick={handleBookNow} className="poster-red-button">
-                  {copy.hero.ctaText} <ArrowRight size={22} />
+                <button
+                  onClick={handleBookNow}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-black text-white text-base uppercase tracking-wide"
+                  style={{
+                    background: 'linear-gradient(180deg,#ff5252 0%,#ef4444 40%,#b91c1c 100%)',
+                    border: '3px solid #fef08a',
+                    boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.3), 0 6px 0 #7f1d1d, 0 16px 28px -8px rgba(0,0,0,0.65)',
+                    textShadow: '0 2px 0 rgba(0,0,0,0.35)',
+                    animation: 'pulseCta 1.9s ease-in-out infinite'
+                  }}
+                >
+                  {copy.hero.ctaText} <ArrowRight size={20} />
                 </button>
+             
               </div>
             )}
           </div>
@@ -474,29 +500,40 @@ export default function LandingPage() {
       </section>
 
       {/* ===== Workshop Offerings ===== */}
-      <section className="py-14 md:py-20 px-4 md:px-12 relative">
+      {/* <section className="py-14 md:py-20 px-4 md:px-12 relative">
         <div className="absolute inset-0 constellation-bg opacity-70 pointer-events-none" />
         <div className="workshop-panel max-w-6xl mx-auto relative">
-          <div className="poster-copy-panel">
-            <div className="poster-copy-kicker">इस मास्टरक्लास में आपको</div>
-            <h2 className="poster-copy-title">{copy.workshop.title}</h2>
-            <ul className="workshop-card-grid">
-              {copy.workshop.items.map((item, i) => {
-                const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
-                return (
-                  <li key={item.title} className="workshop-card animate-workshop-entrance" style={{ animationDelay: `${i * 0.1}s` }}>
-                    <span className="workshop-icon"><Icon size={24} /></span>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.desc}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+ 
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="workshop-image-wrap">
+                <img src={POSTER_IMAGES.workshop} alt="क्या सीखेंगे" className="workshop-poster-img" />
+              </div>
+            </div>
+      
+            <div className="lg:col-span-7">
+              <div className="poster-copy-panel" style={{ textAlign: 'left', padding: 0 }}>
+                <div className="poster-copy-kicker" style={{ justifyContent: 'flex-start' }}>इस मास्टरक्लास में आपको</div>
+                <h2 className="poster-copy-title" style={{ textAlign: 'left', marginLeft: 0 }}>{copy.workshop.title}</h2>
+                <ul className="workshop-card-grid">
+                  {copy.workshop.items.map((item, i) => {
+                    const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
+                    return (
+                      <li key={item.title} className="workshop-card animate-workshop-entrance" style={{ animationDelay: `${i * 0.1}s` }}>
+                        <span className="workshop-icon"><Icon size={24} /></span>
+                        <div>
+                          <strong>{item.title}</strong>
+                          <p>{item.desc}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ===== Bonus Reveal ===== */}
       <section className="py-14 md:py-20 px-4 md:px-12">
@@ -505,7 +542,7 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#22c55e]/20 rounded-full blur-[80px] pointer-events-none" />
           <div className="relative z-10">
             <span className="bonus-badge">⭐ {copy.reveal.badge}</span>
-            <h3 className="font-heading font-black text-3xl sm:text-4xl md:text-5xl text-poster-yellow tracking-tight mb-4 mt-5">
+            <h3 className="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-poster-yellow tracking-tight mb-4 mt-5">
               {copy.reveal.title}
             </h3>
             <p className="text-white text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
@@ -530,7 +567,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <div className="title-plaque title-plaque-light">
-              <h2 className="font-heading font-black text-3xl md:text-5xl text-[#14532d] tracking-tight">
+              <h2 className="font-heading font-black text-2xl md:text-4xl text-[#14532d] tracking-tight">
                 {copy.mentor.title}
               </h2>
             </div>
@@ -548,7 +585,7 @@ export default function LandingPage() {
 
             <div className="mentor-name-plaque mb-6">
               <h3 className="font-heading font-black text-xl md:text-3xl text-white mb-1">{mentorName}</h3>
-              <div className="text-2xl md:text-4xl font-black text-poster-yellow tracking-wide">{copy.mentor.brandLine}</div>
+              <div className="text-xl md:text-3xl font-black text-poster-yellow tracking-wide">{copy.mentor.brandLine}</div>
             </div>
 
             <ul className="w-full max-w-2xl flex flex-col gap-3">
@@ -573,25 +610,27 @@ export default function LandingPage() {
         <section className="py-14 md:py-20 px-4 md:px-12">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
                 {copy.testimonial.titlePrefix} <span className="text-poster-yellow">{copy.testimonial.titleHighlight}</span>
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredTestimonials.map((test, i) => (
-                <div key={i} className="testimonial-card">
-                  <div className="flex justify-between items-start gap-4 mb-3">
-                    <div>
-                      <span className="font-black text-[#14532d] block text-lg">{test.name}</span>
-                      {test.location && <span className="text-[#15803d] text-xs block mt-0.5 font-semibold">📍 {test.location}</span>}
+            <div className="overflow-x-auto pb-4" style={{scrollbarWidth:'none'}}>
+              <div className="flex gap-5" style={{width: 'max-content', animation: filteredTestimonials.length > 2 ? 'testimonialScroll 18s linear infinite' : 'none'}}>
+                {[...filteredTestimonials, ...filteredTestimonials].map((test, i) => (
+                  <div key={i} className="testimonial-card">
+                    <div className="flex justify-between items-start gap-4 mb-3">
+                      <div className="min-w-0">
+                        <span className="font-black text-[#fde047] block text-base truncate">{test.name}</span>
+                        {test.location && <span className="text-[#86efac] text-xs block mt-0.5 font-semibold">📍 {test.location}</span>}
+                      </div>
+                      <div className="flex gap-0.5 flex-shrink-0">
+                        {[...Array(test.rating || 5)].map((_, j) => <Star key={j} size={14} fill="#fde047" stroke="none" />)}
+                      </div>
                     </div>
-                    <div className="flex gap-0.5 text-[#ca8a04]">
-                      {[...Array(test.rating || 5)].map((_, j) => <Star key={j} size={16} fill="#ca8a04" stroke="none" />)}
-                    </div>
+                    <p className="text-white/85 text-sm leading-relaxed italic relative z-10 break-words">"{test.message}"</p>
                   </div>
-                  <p className="text-[#14532d] text-sm md:text-base leading-relaxed italic">"{test.message}"</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -602,7 +641,7 @@ export default function LandingPage() {
         <section className="py-14 md:py-20 px-4 md:px-12">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="section-title-line font-heading font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
+              <h2 className="section-title-line font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
                 {copy.faqSection.titlePrefix} <span className="text-poster-yellow">{copy.faqSection.titleHighlight}</span>
               </h2>
             </div>
@@ -705,7 +744,7 @@ export default function LandingPage() {
               </div>
 
               {/* RIGHT — poster image */}
-              <div className="final-invite-imgwrap sticky-image-mobile">
+              <div className="final-invite-imgwrap">
                 <img
                   src={POSTER_IMAGES.finalInvite}
                   alt="अंतिम आमंत्रण - अभी रजिस्टर करें"
