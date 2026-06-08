@@ -37,6 +37,7 @@ const PAGE_COPY = {
     subheadline: 'जानिए उसका जन्मजात Natural टैलेंट और सही करियर दिशा — सीधे उसकी जन्मकुंडली के ग्रहों से!',
     masterclassTag: '✨ 1 घंटे की लाइव ऑनलाइन मास्टरक्लास',
     ctaText: 'हाँ! मैं अपने बच्चे की सीट सुरक्षित करना चाहता हूँ',
+    offerLabel: 'सीमित ऑफर',
     priceNote: 'केवल इस बैच के लिए विशेष मूल्य'
   },
   problems: {
@@ -49,12 +50,14 @@ const PAGE_COPY = {
     conclusion: '💡 समाधान? बच्चे की कुंडली में छिपा उसका "प्राकृत" Inborn ब्लूप्रिंट!'
   },
   workshop: {
+    kicker: 'इस मास्टरक्लास में आपको',
     title: 'इस मास्टरक्लास में आपको क्या सीखने को मिलेगा?',
     items: [
-      { title: 'करियर मैपिंग साइंस', desc: 'कुंडली के दशम (10th) और द्वितीय (2nd) भाव से बच्चे के सही प्रोफेशन को सटीक पहचानना।' },
-      { title: 'फोकस और याददाश्त', desc: 'ग्रहों के वो आसान प्राकृत उपाय जो बच्चे की एकाग्रता और पढ़ाई में मन लगाने की क्षमता को 2X बढ़ा देंगे।' },
-      { title: 'लाखों रुपयों की सीधी बचत', desc: 'कैसे 10वीं क्लास में लिया गया एक सही और ज्योतिषीय फैसला लाखों की ट्यूशन फीस और मानसिक तनाव बचा सकता है।' },
-      { title: 'सही स्ट्रीम सिलेक्शन', desc: 'साइंस, कॉमर्स या आर्ट्स? ग्रहों की युति और मानसिक क्षमता के आधार पर सटीक और वैज्ञानिक चुनाव।' }
+      { title: 'जन्मकुंडली विश्लेषण', desc: 'ग्रहों की स्थिति के आधार पर बच्चे की प्रमुख क्षमताओं की पहचान।' },
+      { title: 'नेचुरल टैलेंट पहचान', desc: 'बच्चे की विशेष रुचियों और प्राकृतिक गुणों को समझना।' },
+      { title: 'सही करियर दिशा', desc: 'भविष्य में सफलता के लिए उपयुक्त करियर विकल्पों का चयन।' },
+      { title: 'भविष्य की संभावनाएँ', desc: 'आने वाले समय में बेहतर अवसर और संभावित चुनौतियों का विश्लेषण।' },
+      { title: 'लाइव Q&A', desc: 'आपके सभी सवालों के स्पष्ट और व्यावहारिक उत्तर।' }
     ]
   },
   reveal: {
@@ -124,7 +127,13 @@ const PAGE_COPY = {
   }
 };
 
-const WORKSHOP_ICONS = [GraduationCap, Star, Target, TrendingUp];
+const WORKSHOP_ICON_RULES = [
+  { pattern: /(कुंडली|मैपिंग|mapping|analysis|career|जन्मकुंडली|विश्लेषण)/i, Icon: GraduationCap },
+  { pattern: /(फोकस|याददाश्त|focus|memory)/i, Icon: Star },
+  { pattern: /(स्ट्रीम|selection|चयन|दिशा|target)/i, Icon: Target },
+  { pattern: /(भविष्य|संभावना|बचत|saving|future|growth|trend)/i, Icon: TrendingUp },
+  { pattern: /(q&a|सवाल|प्रश्न|उत्तर|live)/i, Icon: MessageCircle }
+];
 const REVEAL_ICONS = [Clock, MessageCircle, Compass, Sparkles];
 const FINAL_BULLET_ICONS = [Calendar, Compass, ShieldCheck];
 const MISTAKE_REFERENCE = [
@@ -189,6 +198,41 @@ const getUniqueFaqs = (items = []) => {
   });
 };
 
+const getWorkshopIcon = (item = {}, index = 0) => {
+  const haystack = `${item.title || ''} ${item.desc || ''}`;
+  const matchedRule = WORKSHOP_ICON_RULES.find(({ pattern }) => pattern.test(haystack));
+  if (matchedRule) return matchedRule.Icon;
+  return [GraduationCap, Star, Target, TrendingUp, MessageCircle][index % 5];
+};
+
+const readCountdownCache = (storageKey) => {
+  const storages = [sessionStorage, localStorage];
+  for (const storage of storages) {
+    try {
+      const raw = storage.getItem(storageKey);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (parsed && Number.isFinite(parsed.endAt)) {
+        return parsed;
+      }
+    } catch {
+      // Ignore malformed cache entries.
+    }
+  }
+  return null;
+};
+
+const writeCountdownCache = (storageKey, payload) => {
+  const value = JSON.stringify(payload);
+  [sessionStorage, localStorage].forEach((storage) => {
+    try {
+      storage.setItem(storageKey, value);
+    } catch {
+      // Ignore storage failures.
+    }
+  });
+};
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const [pageData, setPageData] = useState(null);
@@ -224,22 +268,43 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    if (!pageData?.settings?.countdownEnabled) return;
-    const totalSeconds = (pageData.settings.countdownHours || 2) * 3600 + (pageData.settings.countdownMinutes || 0) * 60;
-    const storageKey = `prakrit-countdown-end-${pageData._id || pageData.slug || 'active'}`;
-    const storedEndAt = Number(sessionStorage.getItem(storageKey));
-    const endAt = storedEndAt > Date.now() ? storedEndAt : Date.now() + totalSeconds * 1000;
-    sessionStorage.setItem(storageKey, String(endAt));
+    const totalSeconds = (Number(pageData?.settings?.countdownHours) || 0) * 3600 + (Number(pageData?.settings?.countdownMinutes) || 0) * 60;
+    if (totalSeconds <= 0) return;
+
+    const storageKey = `prakrit-countdown-${pageData._id || pageData.slug || 'active'}`;
+    const configVersion = `${pageData.updatedAt || ''}:${pageData.settings?.countdownHours || 0}:${pageData.settings?.countdownMinutes || 0}`;
+    const cachedTimer = readCountdownCache(storageKey);
+    let endAt =
+      cachedTimer?.configVersion === configVersion && cachedTimer.endAt > Date.now()
+        ? cachedTimer.endAt
+        : Date.now() + totalSeconds * 1000;
+
+    writeCountdownCache(storageKey, { configVersion, endAt });
 
     const updateTimer = () => {
-      const s = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-      setTimeLeft({ hours: Math.floor(s / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 });
-      return s;
+      let secondsRemaining = Math.ceil((endAt - Date.now()) / 1000);
+      if (secondsRemaining <= 0) {
+        endAt = Date.now() + totalSeconds * 1000;
+        writeCountdownCache(storageKey, { configVersion, endAt });
+        secondsRemaining = totalSeconds;
+      }
+      setTimeLeft({
+        hours: Math.floor(secondsRemaining / 3600),
+        minutes: Math.floor((secondsRemaining % 3600) / 60),
+        seconds: secondsRemaining % 60
+      });
     };
+
     updateTimer();
-    const timer = setInterval(() => { if (updateTimer() <= 0) clearInterval(timer); }, 1000);
+    const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [pageData]);
+  }, [
+    pageData?._id,
+    pageData?.slug,
+    pageData?.updatedAt,
+    pageData?.settings?.countdownHours,
+    pageData?.settings?.countdownMinutes
+  ]);
 
   const toggleFaq = (id) => setOpenFaqId(openFaqId === id ? null : id);
   const handleBookNow = () => navigate('/payment');
@@ -271,6 +336,7 @@ export default function LandingPage() {
 
   const pricing = pageData.pricing || { originalPrice: 1999, offerPrice: 77 };
   const settings = pageData.settings || {};
+  const shouldShowCountdown = ((Number(settings.countdownHours) || 0) * 3600 + (Number(settings.countdownMinutes) || 0) * 60) > 0;
   const content = pickPageContent(pageData.content);
   const adminProblemItems = content.problemSection?.problems?.length ? content.problemSection.problems : null;
   const displayMistakes = adminProblemItems || MISTAKE_REFERENCE;
@@ -289,6 +355,7 @@ export default function LandingPage() {
       conclusion: content.problemSection?.solutionSubtitle || PAGE_COPY.problems.conclusion
     },
     workshop: {
+      kicker: content.insideSection?.kicker || PAGE_COPY.workshop.kicker,
       title: content.insideSection?.title || PAGE_COPY.workshop.title,
       items: content.insideSection?.points?.length ? content.insideSection.points : PAGE_COPY.workshop.items
     },
@@ -308,7 +375,7 @@ export default function LandingPage() {
     faqs: getUniqueFaqs(faqs).map(f => ({ question: f.question, answer: f.answer })),
     footerCta: {
       title: content.footerSection?.urgencyTitle || PAGE_COPY.footerCta.title,
-      subtitle: content.footerSection?.urgencySubtitle || PAGE_COPY.footerCta.subtitle,
+      subtitle: content.footerSection?.subtitle || content.footerSection?.urgencySubtitle || PAGE_COPY.footerCta.subtitle,
       seats: content.footerSection?.urgencyDesc || PAGE_COPY.footerCta.seats,
       price: injectOfferPrice(content.footerSection?.urgencyPrice || PAGE_COPY.footerCta.price, pricing.offerPrice),
       cta: content.footerSection?.ctaText || PAGE_COPY.footerCta.cta,
@@ -374,9 +441,9 @@ export default function LandingPage() {
             {settings.paymentEnabled && (
               <div className="animate-entrance-hero mt-6 w-full max-w-lg mx-auto">
                 {/* Price row */}
-                <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="mb-3 flex items-center justify-center gap-3">
                   <span className="text-white/70 font-bold text-sm line-through decoration-red-400">₹{pricing.originalPrice}</span>
-                  <span className="bg-[#dc2626] text-white text-xs font-black px-2 py-0.5 rounded-full tracking-wide">सीमित ऑफर</span>
+                  <span className="bg-[#dc2626] text-white text-xs font-black px-2 py-0.5 rounded-full tracking-wide">{copy.hero.offerLabel}</span>
                   <span className="text-[#fde047] font-black text-3xl" style={{textShadow:'0 2px 8px rgba(0,0,0,0.5)'}}>₹{pricing.offerPrice}/-</span>
                 </div>
                 {/* CTA Button */}
@@ -471,9 +538,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 constellation-bg opacity-80 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="mistake-section-title">
-              आज के <span className="text-[#fde047]">माता-पिता</span> की सबसे बड़ी <span className="text-[#fde047]">3 गंभीर गलतियाँ</span>
-            </h2>
+            <h2 className="mistake-section-title">{copy.problems.title}</h2>
           </div>
 
           <div className="poster-grid poster-grid-three">
@@ -500,30 +565,36 @@ export default function LandingPage() {
       </section>
 
       {/* ===== Workshop Offerings ===== */}
-      {/* <section className="py-14 md:py-20 px-4 md:px-12 relative">
+      <section className="py-14 md:py-20 px-4 md:px-12 relative">
         <div className="absolute inset-0 constellation-bg opacity-70 pointer-events-none" />
         <div className="workshop-panel max-w-6xl mx-auto relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 gap-8 items-center">
  
-            <div className="lg:col-span-5 flex justify-center">
+            {/* <div className="lg:col-span-5 flex justify-center">
               <div className="workshop-image-wrap">
                 <img src={POSTER_IMAGES.workshop} alt="क्या सीखेंगे" className="workshop-poster-img" />
               </div>
-            </div>
+            </div> */}
       
-            <div className="lg:col-span-7">
+            <div className="mx-auto w-full max-w-5xl">
               <div className="poster-copy-panel" style={{ textAlign: 'left', padding: 0 }}>
-                <div className="poster-copy-kicker" style={{ justifyContent: 'flex-start' }}>इस मास्टरक्लास में आपको</div>
+                <div className="poster-copy-kicker" style={{ justifyContent: 'flex-start' }}>{copy.workshop.kicker}</div>
                 <h2 className="poster-copy-title" style={{ textAlign: 'left', marginLeft: 0 }}>{copy.workshop.title}</h2>
-                <ul className="workshop-card-grid">
+                <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:gap-5 mt-8">
                   {copy.workshop.items.map((item, i) => {
-                    const Icon = WORKSHOP_ICONS[i % WORKSHOP_ICONS.length];
+                    const Icon = getWorkshopIcon(item, i);
                     return (
-                      <li key={item.title} className="workshop-card animate-workshop-entrance" style={{ animationDelay: `${i * 0.1}s` }}>
-                        <span className="workshop-icon"><Icon size={24} /></span>
-                        <div>
-                          <strong>{item.title}</strong>
-                          <p>{item.desc}</p>
+                      <li
+                        key={item.title}
+                        className="animate-workshop-entrance flex min-h-[180px] flex-col justify-between rounded-3xl border border-[#fde047]/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-5 shadow-[0_18px_40px_-26px_rgba(0,0,0,0.8)] backdrop-blur-sm"
+                        style={{ animationDelay: `${i * 0.1}s` }}
+                      >
+                        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fde047]/15 text-[#fde047] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+                          <Icon size={24} />
+                        </span>
+                        <div className="space-y-2">
+                          <strong className="block text-lg font-black text-white">{item.title}</strong>
+                          <p className="text-sm font-medium leading-6 text-white/80 sm:text-[0.95rem]">{item.desc}</p>
                         </div>
                       </li>
                     );
@@ -533,7 +604,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* ===== Bonus Reveal ===== */}
       <section className="py-14 md:py-20 px-4 md:px-12">
@@ -585,7 +656,7 @@ export default function LandingPage() {
 
             <div className="mentor-name-plaque mb-6">
               <h3 className="font-heading font-black text-xl md:text-3xl text-white mb-1">{mentorName}</h3>
-              <div className="text-xl md:text-3xl font-black text-poster-yellow tracking-wide">{copy.mentor.brandLine}</div>
+              <div className="text-sm md:text-xl font-black text-poster-yellow tracking-wide">{copy.mentor.brandLine}</div>
             </div>
 
             <ul className="w-full max-w-2xl flex flex-col gap-3">
@@ -669,7 +740,7 @@ export default function LandingPage() {
       )}
 
       {/* ===== FINAL CTA — अंतिम आमंत्रण ===== */}
-      {settings.countdownEnabled && (
+      {shouldShowCountdown && (
         <section className="py-14 md:py-20 px-4 md:px-12 text-center relative overflow-hidden">
           <div className="absolute inset-0 constellation-bg pointer-events-none" />
           <div className="max-w-6xl mx-auto relative z-10">
@@ -741,6 +812,9 @@ export default function LandingPage() {
                   <span><Lock size={16} /> {copy.footerCta.trustBadges[2] || 'Privacy Protected'}</span>
                 </div>
                 <p className="text-white/85 text-xs md:text-sm font-bold mt-3">{copy.footerCta.secureText}</p>
+                <p className="text-[#fde047]/90 text-xs font-semibold mt-3">
+                  © {new Date().getFullYear()} {copy.footer.copyrightName}. All rights reserved.
+                </p>
               </div>
 
               {/* RIGHT — poster image */}
@@ -764,15 +838,12 @@ export default function LandingPage() {
             <a key={href} href={href} className="text-white text-xs md:text-sm font-bold hover:text-[#fde047] transition-colors">{label}</a>
           ))}
         </div>
-        <p className="text-[#fde047]/90 text-xs font-semibold">
-          © {new Date().getFullYear()} {copy.footer.copyrightName}. All rights reserved.
-        </p>
       </footer>
 
       {/* Sticky mobile bottom bar */}
       <div className="mobile-sticky-bar md:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-3 py-2.5">
-          {settings.countdownEnabled && (
+          {shouldShowCountdown && (
             <div className="mobile-timer-pill">
               <div className="mobile-timer-label">Time Left</div>
               <div className="mobile-timer-value">

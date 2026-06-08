@@ -107,7 +107,7 @@ function StateDropdown({ value, onChange, inputCls, placeholder = 'Select State'
 const defaultFormFields = {
   name: { visible: true, label: copy.name, required: true },
   mobile: { visible: true, label: copy.mobile, required: true },
-  email: { visible: true, label: copy.email, required: false },
+  email: { visible: true, label: copy.email, required: true },
   careerCategory: { visible: true, label: copy.careerCategory, required: false },
   notes: { visible: true, label: copy.notes, required: true }
 };
@@ -132,6 +132,7 @@ function loadRazorpayScript() {
 
 export default function PaymentPage() {
   const navigate = useNavigate();
+  const checkoutType = window.location.pathname === '/personalized-payment' ? 'personalized' : 'campaign';
   const [landingPage, setLandingPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -146,27 +147,50 @@ export default function PaymentPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const amount = landingPage?.pricing?.offerPrice || 0;
-  const originalAmount = landingPage?.pricing?.originalPrice;
+  const amount = checkoutType === 'personalized'
+    ? (landingPage?.pricing?.personalizedOfferPrice ?? landingPage?.pricing?.offerPrice ?? 0)
+    : (landingPage?.pricing?.offerPrice || 0);
+  const originalAmount = checkoutType === 'personalized'
+    ? (landingPage?.pricing?.personalizedOriginalPrice ?? landingPage?.pricing?.originalPrice)
+    : landingPage?.pricing?.originalPrice;
   const savedFormFields = landingPage?.settings?.formFields || {};
   const formFields = Object.fromEntries(
-    Object.entries(defaultFormFields).map(([field, config]) => [field, { ...config, ...(savedFormFields[field] || {}) }])
+    Object.entries(defaultFormFields).map(([field, config]) => [
+      field,
+      field === 'email'
+        ? { ...config, ...(savedFormFields[field] || {}), required: true }
+        : { ...config, ...(savedFormFields[field] || {}) }
+    ])
   );
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+  const normalizedExpectedAmount = Number(amount || 0);
 
   const submit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
     if (!form.state) { setError('Please select your state.'); setSubmitting(false); return; }
+    if (!form.email.trim()) { setError('Email is required.'); setSubmitting(false); return; }
     try {
       const res = await fetch(`${API_BASE_URL}/api/payment/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, serviceType: form.careerCategory, preferredLanguage: 'hinglish', landingPageId: landingPage?._id, state: form.state })
+        body: JSON.stringify({
+          ...form,
+          checkoutType,
+          expectedAmount: normalizedExpectedAmount,
+          serviceType: checkoutType === 'personalized' ? 'Personalized 1-to-1 Session' : form.careerCategory,
+          preferredLanguage: 'hinglish',
+          landingPageId: landingPage?._id,
+          state: form.state
+        })
       });
       const order = await res.json();
       if (!res.ok) throw new Error(order.message || 'Payment order failed.');
+      const orderAmount = Number(order.amount || 0);
+      if (!Number.isFinite(orderAmount) || orderAmount !== normalizedExpectedAmount) {
+        throw new Error(`Price mismatch detected. Expected ₹${normalizedExpectedAmount}, but checkout is trying to use ₹${orderAmount}. Please contact support before paying.`);
+      }
       if (!order.keyId) throw new Error('Razorpay key is missing. Please configure backend Razorpay credentials.');
       const loaded = await loadRazorpayScript();
       if (!loaded || !window.Razorpay) throw new Error('Unable to load Razorpay.');
@@ -190,7 +214,7 @@ export default function PaymentPage() {
         amount: Math.round(order.amount * 100),
         currency: order.currency,
         name: 'Prakrit Astro',
-        description: form.careerCategory,
+        description: checkoutType === 'personalized' ? 'Personalized 1-to-1 Session' : form.careerCategory,
         order_id: order.orderId,
         prefill: { name: form.name, email: form.email, contact: form.mobile },
         theme: { color: '#7b341e' },
@@ -247,8 +271,14 @@ export default function PaymentPage() {
           <div className="inline-flex items-center gap-2 rounded-full border border-[#fde047]/45 bg-[#052e16]/70 px-4 py-2 text-xs font-black uppercase tracking-wide text-[#fde047]">
             <Lock size={14} /> Secure Booking
           </div>
-          <h2 className="font-heading font-extrabold text-[clamp(1.85rem,5vw,3rem)] text-white mt-4 leading-tight">{copy.title}</h2>
-          <p className="text-[#fef9c3]/85 mt-2 max-w-2xl mx-auto text-sm md:text-base">{copy.subtitle}</p>
+          <h2 className="font-heading font-extrabold text-[clamp(1.85rem,5vw,3rem)] text-white mt-4 leading-tight">
+            {checkoutType === 'personalized' ? 'Secure Your Personalized one to one Session Seat' : copy.title}
+          </h2>
+          <p className="text-[#fef9c3]/85 mt-2 max-w-2xl mx-auto text-sm md:text-base">
+            {checkoutType === 'personalized'
+              ? 'Existing webinar parents ke liye special second-step booking. Details fill karein aur personalized session secure karein.'
+              : copy.subtitle}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[0.82fr_1.18fr] gap-6 items-start">
@@ -263,12 +293,18 @@ export default function PaymentPage() {
                 <span className="font-heading text-6xl font-black leading-none">{amount}</span>
                 {originalAmount && <span className="mb-2 text-sm font-black line-through opacity-70">₹{originalAmount}</span>}
               </div>
-              <p className="mt-3 text-sm font-extrabold">1 hour live online masterclass booking</p>
+              <p className="mt-3 text-sm font-extrabold">
+                {checkoutType === 'personalized' ? 'Personalized one to one session booking' : '1 hour live online masterclass booking'}
+              </p>
             </div>
 
             <div className="mt-6">
               <h5 className="font-heading text-2xl font-black text-[#fde047]">{landingPage?.name || 'Prakrit Career Boost'}</h5>
-              <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85">Details carefully fill karein. Isi number par confirmation aur WhatsApp group details share hongi.</p>
+              <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85">
+                {checkoutType === 'personalized'
+                  ? 'Details carefully fill karein. Isi number & Email par confirmation aur Meeting details share hongi.'
+                  : 'Details carefully fill karein. Isi number par confirmation aur meeting details share hongi.'}
+              </p>
             </div>
 
             <div className="mt-5 grid gap-3 text-sm font-bold text-[#fef9c3]">
@@ -276,7 +312,7 @@ export default function PaymentPage() {
                 <ShieldCheck size={18} className="text-[#fde047]" /> Secure Razorpay checkout
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-[#fde047]/30 bg-[#052e16]/45 px-4 py-3">
-                <MessageSquare size={18} className="text-[#fde047]" /> WhatsApp confirmation after payment
+                <MessageSquare size={18} className="text-[#fde047]" /> Confirmation after payment
               </div>
             </div>
           </aside>

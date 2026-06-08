@@ -13,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/personalized-payment" element={<PaymentPage />} />
           <Route path="/payment-success" element={<SuccessPage />} />
           <Route path="/payment-failed" element={<FailedPage />} />
           <Route path="/privacy-policy" element={<StaticPage type="privacy" />} />
