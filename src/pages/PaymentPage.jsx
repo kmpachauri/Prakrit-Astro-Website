@@ -17,7 +17,29 @@ const copy = {
   back: 'Back'
 };
 
-const categoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
+const defaultCategoryOptions = ['8th Class', '9th Class', '10th Class', 'Stream Selection Query', 'Confusion About Future', 'Other'];
+const defaultPaymentPageContent = {
+  campaignBadge: 'Secure Booking',
+  campaignTitle: copy.title,
+  campaignSubtitle: copy.subtitle,
+  campaignOfferLabel: 'Today Offer',
+  campaignOfferDescription: '1 hour live online masterclass booking',
+  campaignInfoText: 'Details carefully fill karein. Isi number par confirmation aur meeting details share hongi.',
+  personalizedBadge: 'Secure Booking',
+  personalizedTitle: 'Secure Your Personalized one to one Session Seat',
+  personalizedSubtitle: 'Existing webinar parents ke liye special second-step booking. Details fill karein aur personalized session secure karein.',
+  personalizedOfferLabel: 'Today Offer',
+  personalizedOfferDescription: 'Personalized one to one session booking',
+  personalizedInfoText: 'Details carefully fill karein. Isi number & Email par confirmation aur Meeting details share hongi.',
+  formTitle: 'Booking Details',
+  requiredHint: 'All required fields marked with *.',
+  secureCheckoutText: 'Secure Razorpay checkout',
+  confirmationText: 'Confirmation after payment',
+  securedText: copy.secured,
+  payButtonText: copy.pay,
+  loadingText: 'Loading booking details...',
+  backButtonText: 'Back to Home'
+};
 const placeholders = {
   name: 'Example: Rajesh Sharma',
   mobile: '10 digit mobile number',
@@ -157,20 +179,37 @@ export default function PaymentPage() {
   const formFields = Object.fromEntries(
     Object.entries(defaultFormFields).map(([field, config]) => [
       field,
-      field === 'email'
-        ? { ...config, ...(savedFormFields[field] || {}), required: true }
-        : { ...config, ...(savedFormFields[field] || {}) }
+      { ...config, ...(savedFormFields[field] || {}) }
     ])
   );
+  const savedCategoryOptions = Array.isArray(landingPage?.settings?.categoryOptions)
+    ? landingPage.settings.categoryOptions.map(option => String(option).trim()).filter(Boolean)
+    : [];
+  const categoryOptions = savedCategoryOptions.length
+    ? savedCategoryOptions
+    : defaultCategoryOptions;
+  const paymentContent = { ...defaultPaymentPageContent, ...(landingPage?.settings?.paymentPageContent || {}) };
+  const activeContentPrefix = checkoutType === 'personalized' ? 'personalized' : 'campaign';
+  const contentFor = (field) => paymentContent[`${activeContentPrefix}${field}`] || defaultPaymentPageContent[`${activeContentPrefix}${field}`] || '';
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
   const normalizedExpectedAmount = Number(amount || 0);
+
+  useEffect(() => {
+    if (formFields.careerCategory?.visible !== false && categoryOptions.length && !categoryOptions.includes(form.careerCategory)) {
+      setForm(prev => ({ ...prev, careerCategory: categoryOptions[0] }));
+    }
+  }, [categoryOptions.join('|'), form.careerCategory, formFields.careerCategory?.visible]);
 
   const submit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
     if (!form.state) { setError('Please select your state.'); setSubmitting(false); return; }
-    if (!form.email.trim()) { setError('Email is required.'); setSubmitting(false); return; }
+    if (formFields.email?.visible !== false && formFields.email?.required !== false && !form.email.trim()) {
+      setError('Email is required.');
+      setSubmitting(false);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/payment/create`, {
         method: 'POST',
@@ -243,7 +282,7 @@ export default function PaymentPage() {
     return (
       <div className="app-green-page min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-[#ecc472]" size={42} />
-        <p className="text-[#cdded2]">Loading booking details...</p>
+        <p className="text-[#cdded2]">{paymentContent.loadingText}</p>
       </div>
     );
   }
@@ -264,20 +303,18 @@ export default function PaymentPage() {
     <main className="app-green-page min-h-screen px-4 md:px-10 py-8 md:py-16">
       <div className="w-full max-w-5xl mx-auto">
         <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border-2 border-[#fde047]/60 bg-[#052e16]/80 text-[#fde047] font-black text-sm hover:bg-[#fde047] hover:text-[#14532d] transition-all duration-200">
-          <ArrowLeft size={15} /> Back to Home
+          <ArrowLeft size={15} /> {paymentContent.backButtonText}
         </button>
 
         <div className="text-center mb-7">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#fde047]/45 bg-[#052e16]/70 px-4 py-2 text-xs font-black uppercase tracking-wide text-[#fde047]">
-            <Lock size={14} /> Secure Booking
+            <Lock size={14} /> {contentFor('Badge')}
           </div>
           <h2 className="font-heading font-extrabold text-[clamp(1.85rem,5vw,3rem)] text-white mt-4 leading-tight">
-            {checkoutType === 'personalized' ? 'Secure Your Personalized one to one Session Seat' : copy.title}
+            {contentFor('Title')}
           </h2>
           <p className="text-[#fef9c3]/85 mt-2 max-w-2xl mx-auto text-sm md:text-base">
-            {checkoutType === 'personalized'
-              ? 'Existing webinar parents ke liye special second-step booking. Details fill karein aur personalized session secure karein.'
-              : copy.subtitle}
+            {contentFor('Subtitle')}
           </p>
         </div>
 
@@ -285,7 +322,7 @@ export default function PaymentPage() {
           <aside className="app-green-panel rounded-2xl p-5 md:p-6 backdrop-blur-xl lg:sticky lg:top-6">
             <div className="rounded-2xl bg-gradient-to-br from-[#fef9c3] to-[#facc15] p-5 text-[#14532d] shadow-[0_10px_0_#854d0e,0_22px_40px_-24px_rgba(0,0,0,0.75)]">
               <div className="flex items-center justify-between gap-4">
-                <span className="text-xs font-black uppercase tracking-wide">Today Offer</span>
+                <span className="text-xs font-black uppercase tracking-wide">{contentFor('OfferLabel')}</span>
                 <ShieldCheck size={22} />
               </div>
               <div className="mt-4 flex items-end gap-2">
@@ -294,33 +331,31 @@ export default function PaymentPage() {
                 {originalAmount && <span className="mb-2 text-sm font-black line-through opacity-70">₹{originalAmount}</span>}
               </div>
               <p className="mt-3 text-sm font-extrabold">
-                {checkoutType === 'personalized' ? 'Personalized one to one session booking' : '1 hour live online masterclass booking'}
+                {contentFor('OfferDescription')}
               </p>
             </div>
 
             <div className="mt-6">
               <h5 className="font-heading text-2xl font-black text-[#fde047]">{landingPage?.name || 'Prakrit Career Boost'}</h5>
               <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85">
-                {checkoutType === 'personalized'
-                  ? 'Details carefully fill karein. Isi number & Email par confirmation aur Meeting details share hongi.'
-                  : 'Details carefully fill karein. Isi number par confirmation aur meeting details share hongi.'}
+                {contentFor('InfoText')}
               </p>
             </div>
 
             <div className="mt-5 grid gap-3 text-sm font-bold text-[#fef9c3]">
               <div className="flex items-center gap-3 rounded-xl border border-[#fde047]/30 bg-[#052e16]/45 px-4 py-3">
-                <ShieldCheck size={18} className="text-[#fde047]" /> Secure Razorpay checkout
+                <ShieldCheck size={18} className="text-[#fde047]" /> {paymentContent.secureCheckoutText}
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-[#fde047]/30 bg-[#052e16]/45 px-4 py-3">
-                <MessageSquare size={18} className="text-[#fde047]" /> Confirmation after payment
+                <MessageSquare size={18} className="text-[#fde047]" /> {paymentContent.confirmationText}
               </div>
             </div>
           </aside>
 
           <div className="app-green-panel rounded-2xl p-5 md:p-7 backdrop-blur-xl">
             <div className="mb-6">
-              <h3 className="font-heading text-2xl md:text-3xl font-black text-white">Booking Details</h3>
-              <p className="mt-1 text-sm font-semibold text-[#fef9c3]/80">All required fields marked with *.</p>
+              <h3 className="font-heading text-2xl md:text-3xl font-black text-white">{paymentContent.formTitle}</h3>
+              <p className="mt-1 text-sm font-semibold text-[#fef9c3]/80">{paymentContent.requiredHint}</p>
             </div>
 
             {error && <div className="rounded-xl border border-red-400 bg-[rgba(255,93,101,.14)] text-red-100 px-4 py-3 mb-5 text-sm font-bold">{error}</div>}
@@ -415,13 +450,13 @@ export default function PaymentPage() {
               )}
 
               <button type="submit" disabled={submitting} className="ripple-btn relative flex w-full min-h-[62px] items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-[#ff5252] via-[#ef4444] to-[#b91c1c] px-5 text-white font-black text-lg shadow-[inset_0_2px_0_rgba(255,255,255,0.28),0_7px_0_#7f1d1d,0_20px_40px_-16px_rgba(0,0,0,0.78)] border-2 border-[#fef08a] hover:-translate-y-1 hover:brightness-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
-                {submitting ? <><Loader2 className="animate-spin" size={20} /> Please wait...</> : <>{copy.pay} ₹{amount} <Lock size={19} /></>}
+                {submitting ? <><Loader2 className="animate-spin" size={20} /> Please wait...</> : <>{paymentContent.payButtonText} ₹{amount} <Lock size={19} /></>}
               </button>
             </form>
 
             <div className="flex items-center justify-center gap-2 mt-5 text-[#fef9c3]/85 text-sm font-semibold">
               <ShieldCheck size={15} className="text-[#fde047]" />
-              <span>{copy.secured}</span>
+              <span>{paymentContent.securedText}</span>
             </div>
           </div>
         </div>
